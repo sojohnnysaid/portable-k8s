@@ -1,0 +1,21 @@
+name: "Docs (dev) - main branch"
+on:
+  push:
+    branches: [ "main" ]
+permissions:
+  contents: write
+jobs:
+  build-and-deploy-dev:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with: { fetch-depth: 0 }
+      - run: git fetch origin gh-pages --depth=1 || true
+      - uses: actions/setup-python@v5
+        with: { python-version: "3.x" }
+      - run: pip install mkdocs-material mike pymdown-extensions mkdocs-git-revision-date-localized-plugin mkdocs-minify-plugin mkdocs-glightbox mkdocs-redirects
+      - name: "Deploy dev alias"
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          mike deploy --push --rebase dev

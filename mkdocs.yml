@@ -1,0 +1,91 @@
+# mkdocs.yml
+
+# Project Information
+site_name: Portable K8s GitOps Playbook
+site_description: A lean, self-managed Kubernetes blueprint using containerd, nerdctl, kubeadm, Helm, and GitOps.
+site_url: https://sojohnnysaid.github.io/portable-k8s-gitops-playbook/ # Required for versioning
+repo_url: https://github.com/sojohnnysaid/portable-k8s-gitops-playbook
+edit_uri: edit/main/docs/
+
+# Theme Configuration
+theme:
+  name: material
+  custom_dir: overrides
+  features:
+    - navigation.instant
+    - navigation.sections
+    - navigation.top
+    - search.suggest
+    - search.highlight
+    - content.code.copy
+    - content.tabs.link
+    - toc.integrate
+  palette:
+    # Set dark mode as the default
+    - scheme: slate
+      toggle:
+        icon: material/weather-sunny
+        name: Switch to light mode
+    - scheme: default
+      toggle:
+        icon: material/weather-night
+        name: Switch to dark mode
+
+# Plugins
+plugins:
+  - search
+  - git-revision-date-localized:
+      fallback_to_build_date: true
+  - redirects:
+      redirect_maps:
+        # Add old_page.md: new_page.md here when you move content
+        old-page.md: new-page.md
+  - glightbox:
+      auto_caption: true
+  - minify:
+      minify_html: true
+
+# Markdown Extensions
+markdown_extensions:
+  - admonition
+  - attr_list
+  - footnotes
+  - pymdownx.details
+  - pymdownx.superfences
+  - pymdownx.tabbed:
+      alternate_style: true
+
+# Versioning with Mike
+extra:
+  version:
+    provider: mike
+    default: latest # Alias for the default version
+
+# Navigation Structure
+nav:
+  - Overview: index.md
+  - Goals & Non-Goals: goals.md
+  - Principles: principles.md
+  - Reference Architecture:
+      - Bird’s-Eye View: reference/architecture.md
+      - Networking & Links: reference/networking.md
+  - Environments & Parity: environments.md
+  - Toolchain: toolchain.md
+  - Repo Layout & Branching: repo-layout.md
+  - CI/CD & GitOps:
+      - App Pipeline: cicd/app-pipeline.md
+      - Platform Pipeline: cicd/platform-pipeline.md
+      - Ephemeral Environments: cicd/ephemeral-envs.md
+  - Data & State: data-state.md
+  - Security Baseline: security.md
+  - Observability & Ops: observability.md
+  - Operations Runbooks:
+      - Bootstrap: runbooks/bootstrap.md
+      - Upgrades: runbooks/upgrades.md
+      - Backups & Restore: runbooks/backups-restore.md
+      - Disaster Recovery: runbooks/disaster-recovery.md
+  - Local Dev Workflow: local-dev.md
+  - Examples & Snippets: examples.md
+  - Risks & Roadmap: risks-roadmap.md
+  - Deliverables Checklist: deliverables.md
+  - Appendix: appendix.md
