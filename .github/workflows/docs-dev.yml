@@ -19,4 +19,4 @@ jobs:
           git config user.name "github-actions[bot]"
           git config user.email "github-actions[bot]@users.noreply.github.com"
           mike deploy --push --update-aliases dev latest
-          mike set-default --push --rebase latest
+          mike set-default --push latest
