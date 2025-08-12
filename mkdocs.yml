@@ -3,8 +3,8 @@
 # Project Information
 site_name: Portable K8s GitOps Playbook
 site_description: A lean, self-managed Kubernetes blueprint using containerd, nerdctl, kubeadm, Helm, and GitOps.
-site_url: https://sojohnnysaid.github.io/portable-k8s-gitops-playbook/ # Required for versioning
-repo_url: https://github.com/sojohnnysaid/portable-k8s-gitops-playbook
+site_url: https://sojohnnysaid.github.io/portable-k8s/ # Required for versioning
+repo_url: https://github.com/sojohnnysaid/portable-k8s
 edit_uri: edit/main/docs/
 
 # Theme Configuration
