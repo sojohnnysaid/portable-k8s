@@ -89,3 +89,9 @@ nav:
   - Risks & Roadmap: risks-roadmap.md
   - Deliverables Checklist: deliverables.md
   - Appendix: appendix.md
+
+extra_css:
+  - assets/stylesheets/extra.css
+
+extra_javascript:
+  - assets/javascripts/dismiss_banner.js

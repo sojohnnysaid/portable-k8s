@@ -4,9 +4,10 @@
   <div class="md-banner md-banner--warning">
     <div class="md-banner__inner md-grid md-typeset">
       You're not viewing the latest version.
-      <a href="{{ 'latest/' | url }}">
+      <a href="{{ base_url }}latest/">
         <strong>Click here to go to the latest version.</strong>
       </a>
+      <button class="banner-close-button" title="Dismiss" type="button">&times;</button>
     </div>
   </div>
 {% endblock %}
