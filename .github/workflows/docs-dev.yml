@@ -18,4 +18,4 @@ jobs:
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "github-actions[bot]@users.noreply.github.com"
-          mike deploy --push --rebase dev
+          mike deploy --push dev

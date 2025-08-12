@@ -23,5 +23,5 @@ jobs:
           git config user.name "github-actions[bot]"
           git config user.email "github-actions[bot]@users.noreply.github.com"
           VERSION_MINOR=$(echo "${TAG#v}" | awk -F. '{print $1"."$2}')
-          mike deploy --push --rebase --update-aliases "$VERSION_MINOR" latest
+          mike deploy --push --update-aliases "$VERSION_MINOR" latest
           mike set-default --push --rebase latest
