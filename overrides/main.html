@@ -4,10 +4,20 @@
   <div class="md-banner md-banner--warning">
     <div class="md-banner__inner md-grid md-typeset">
       You're not viewing the latest version.
-		{% set root_url = '/' + '/'.join(base_url.strip('/').split('/')[:-1]) %}
-		<a href="{{ root_url.rstrip('/') }}/latest/">
-  			<strong>Click here to go to the latest version.</strong>
-		</a>
+      <a id="latest-link">
+        <strong>Click here to go to the latest version.</strong>
+      </a>
     </div>
   </div>
+  <script>
+    (function() {
+      var latestLink = document.getElementById('latest-link');
+      if (window.location.hostname === 'sojohnnysaid.github.io') {
+        latestLink.href = '/portable-k8s/latest/';
+      } else {
+        latestLink.href = '/latest/';
+      }
+    })();
+  </script>
 {% endblock %}
+
