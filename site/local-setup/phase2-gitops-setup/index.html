@@ -1,0 +1,421 @@
+<!doctype html><html lang=en class=no-js> <head><meta charset=utf-8><meta name=viewport content="width=device-width,initial-scale=1"><meta name=description content="A lean, self-managed Kubernetes blueprint using containerd, nerdctl, kubeadm, Helm, and GitOps."><link href=https://sojohnnysaid.github.io/portable-k8s/dev/local-setup/phase2-gitops-setup/ rel=canonical><link href=../phase1-environment-setup/ rel=prev><link href=../../local-dev/ rel=next><link rel=icon href=../../assets/images/favicon.png><meta name=generator content="mkdocs-1.6.1, mkdocs-material-9.6.16"><title>Phase 2 - GitOps Repository and ArgoCD Configuration - Portable K8s GitOps Playbook</title><link rel=stylesheet href=../../assets/stylesheets/main.7e37652d.min.css><link rel=stylesheet href=../../assets/stylesheets/palette.06af60db.min.css><link rel=preconnect href=https://fonts.gstatic.com crossorigin><link rel=stylesheet href="https://fonts.googleapis.com/css?family=Roboto:300,300i,400,400i,700,700i%7CRoboto+Mono:400,400i,700,700i&display=fallback"><style>:root{--md-text-font:"Roboto";--md-code-font:"Roboto Mono"}</style><script>__md_scope=new URL("../..",location),__md_hash=e=>[...e].reduce(((e,_)=>(e<<5)-e+_.charCodeAt(0)),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script><link href=../../assets/stylesheets/glightbox.min.css rel=stylesheet><style>
+    html.glightbox-open { overflow: initial; height: 100%; }
+    .gslide-title { margin-top: 0px; user-select: text; }
+    .gslide-desc { color: #666; user-select: text; }
+    .gslide-image img { background: white; }
+    .gscrollbar-fixer { padding-right: 15px; }
+    .gdesc-inner { font-size: 0.75rem; }
+    body[data-md-color-scheme="slate"] .gdesc-inner { background: var(--md-default-bg-color);}
+    body[data-md-color-scheme="slate"] .gslide-title { color: var(--md-default-fg-color);}
+    body[data-md-color-scheme="slate"] .gslide-desc { color: var(--md-default-fg-color);}</style><script src=../../assets/javascripts/glightbox.min.js></script></head> <body dir=ltr data-md-color-scheme=slate data-md-color-primary=indigo data-md-color-accent=indigo> <input class=md-toggle data-md-toggle=drawer type=checkbox id=__drawer autocomplete=off> <input class=md-toggle data-md-toggle=search type=checkbox id=__search autocomplete=off> <label class=md-overlay for=__drawer></label> <div data-md-component=skip> <a href=#phase-2-gitops-repository-and-argocd-configuration class=md-skip> Skip to content </a> </div> <div data-md-component=announce> </div> <div data-md-color-scheme=default data-md-component=outdated hidden> <aside class="md-banner md-banner--warning"> <div class="md-banner__inner md-grid md-typeset"> <div class="md-banner md-banner--warning"> <div class="md-banner__inner md-grid md-typeset"> You're not viewing the latest version. <a id=latest-link> <strong>Click here to go to the latest version.</strong> </a> </div> </div> <script>
+    (function() {
+      var latestLink = document.getElementById('latest-link');
+      if (window.location.hostname === 'sojohnnysaid.github.io') {
+        latestLink.href = '/portable-k8s/latest/';
+      } else {
+        latestLink.href = '/latest/';
+      }
+    })();
+  </script> </div> <script>var el=document.querySelector("[data-md-component=outdated]"),base=new URL("../.."),outdated=__md_get("__outdated",sessionStorage,base);!0===outdated&&el&&(el.hidden=!1)</script> </aside> </div> <header class="md-header md-header--shadow" data-md-component=header> <nav class="md-header__inner md-grid" aria-label=Header> <a href=../.. title="Portable K8s GitOps Playbook" class="md-header__button md-logo" aria-label="Portable K8s GitOps Playbook" data-md-component=logo> <svg xmlns=http://www.w3.org/2000/svg viewbox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg> </a> <label class="md-header__button md-icon" for=__drawer> <svg xmlns=http://www.w3.org/2000/svg viewbox="0 0 24 24"><path d="M3 6h18v2H3zm0 5h18v2H3zm0 5h18v2H3z"/></svg> </label> <div class=md-header__title data-md-component=header-title> <div class=md-header__ellipsis> <div class=md-header__topic> <span class=md-ellipsis> Portable K8s GitOps Playbook </span> </div> <div class=md-header__topic data-md-component=header-topic> <span class=md-ellipsis> Phase 2 - GitOps Repository and ArgoCD Configuration </span> </div> </div> </div> <form class=md-header__option data-md-component=palette> <input class=md-option data-md-color-media data-md-color-scheme=slate data-md-color-primary=indigo data-md-color-accent=indigo aria-label="Switch to light mode" type=radio name=__palette id=__palette_0> <label class="md-header__button md-icon" title="Switch to light mode" for=__palette_1 hidden> <svg xmlns=http://www.w3.org/2000/svg viewbox="0 0 24 24"><path d="M12 7a5 5 0 0 1 5 5 5 5 0 0 1-5 5 5 5 0 0 1-5-5 5 5 0 0 1 5-5m0 2a3 3 0 0 0-3 3 3 3 0 0 0 3 3 3 3 0 0 0 3-3 3 3 0 0 0-3-3m0-7 2.39 3.42C13.65 5.15 12.84 5 12 5s-1.65.15-2.39.42zM3.34 7l4.16-.35A7.2 7.2 0 0 0 5.94 8.5c-.44.74-.69 1.5-.83 2.29zm.02 10 1.76-3.77a7.131 7.131 0 0 0 2.38 4.14zM20.65 7l-1.77 3.79a7.02 7.02 0 0 0-2.38-4.15zm-.01 10-4.14.36c.59-.51 1.12-1.14 1.54-1.86.42-.73.69-1.5.83-2.29zM12 22l-2.41-3.44c.74.27 1.55.44 2.41.44.82 0 1.63-.17 2.37-.44z"/></svg> </label> <input class=md-option data-md-color-media data-md-color-scheme=default data-md-color-primary=indigo data-md-color-accent=indigo aria-label="Switch to dark mode" type=radio name=__palette id=__palette_1> <label class="md-header__button md-icon" title="Switch to dark mode" for=__palette_0 hidden> <svg xmlns=http://www.w3.org/2000/svg viewbox="0 0 24 24"><path d="m17.75 4.09-2.53 1.94.91 3.06-2.63-1.81-2.63 1.81.91-3.06-2.53-1.94L12.44 4l1.06-3 1.06 3zm3.5 6.91-1.64 1.25.59 1.98-1.7-1.17-1.7 1.17.59-1.98L15.75 11l2.06-.05L18.5 9l.69 1.95zm-2.28 4.95c.83-.08 1.72 1.1 1.19 1.85-.32.45-.66.87-1.08 1.27C15.17 23 8.84 23 4.94 19.07c-3.91-3.9-3.91-10.24 0-14.14.4-.4.82-.76 1.27-1.08.75-.53 1.93.36 1.85 1.19-.27 2.86.69 5.83 2.89 8.02a9.96 9.96 0 0 0 8.02 2.89m-1.64 2.02a12.08 12.08 0 0 1-7.8-3.47c-2.17-2.19-3.33-5-3.49-7.82-2.81 3.14-2.7 7.96.31 10.98 3.02 3.01 7.84 3.12 10.98.31"/></svg> </label> </form> <script>var palette=__md_get("__palette");if(palette&&palette.color){if("(prefers-color-scheme)"===palette.color.media){var media=matchMedia("(prefers-color-scheme: light)"),input=document.querySelector(media.matches?"[data-md-color-media='(prefers-color-scheme: light)']":"[data-md-color-media='(prefers-color-scheme: dark)']");palette.color.media=input.getAttribute("data-md-color-media"),palette.color.scheme=input.getAttribute("data-md-color-scheme"),palette.color.primary=input.getAttribute("data-md-color-primary"),palette.color.accent=input.getAttribute("data-md-color-accent")}for(var[key,value]of Object.entries(palette.color))document.body.setAttribute("data-md-color-"+key,value)}</script> <label class="md-header__button md-icon" for=__search> <svg xmlns=http://www.w3.org/2000/svg viewbox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg> </label> <div class=md-search data-md-component=search role=dialog> <label class=md-search__overlay for=__search></label> <div class=md-search__inner role=search> <form class=md-search__form name=search> <input type=text class=md-search__input name=query aria-label=Search placeholder=Search autocapitalize=off autocorrect=off autocomplete=off spellcheck=false data-md-component=search-query required> <label class="md-search__icon md-icon" for=__search> <svg xmlns=http://www.w3.org/2000/svg viewbox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg> <svg xmlns=http://www.w3.org/2000/svg viewbox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11z"/></svg> </label> <nav class=md-search__options aria-label=Search> <button type=reset class="md-search__icon md-icon" title=Clear aria-label=Clear tabindex=-1> <svg xmlns=http://www.w3.org/2000/svg viewbox="0 0 24 24"><path d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg> </button> </nav> <div class=md-search__suggest data-md-component=search-suggest></div> </form> <div class=md-search__output> <div class=md-search__scrollwrap tabindex=0 data-md-scrollfix> <div class=md-search-result data-md-component=search-result> <div class=md-search-result__meta> Initializing search </div> <ol class=md-search-result__list role=presentation></ol> </div> </div> </div> </div> </div> <div class=md-header__source> <a href=https://github.com/sojohnnysaid/portable-k8s title="Go to repository" class=md-source data-md-component=source> <div class="md-source__icon md-icon"> <svg xmlns=http://www.w3.org/2000/svg viewbox="0 0 448 512"><!-- Font Awesome Free 7.0.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path fill=currentColor d="M439.6 236.1 244 40.5c-5.4-5.5-12.8-8.5-20.4-8.5s-15 3-20.4 8.4L162.5 81l51.5 51.5c27.1-9.1 52.7 16.8 43.4 43.7l49.7 49.7c34.2-11.8 61.2 31 35.5 56.7-26.5 26.5-70.2-2.9-56-37.3L240.3 199v121.9c25.3 12.5 22.3 41.8 9.1 55-6.4 6.4-15.2 10.1-24.3 10.1s-17.8-3.6-24.3-10.1c-17.6-17.6-11.1-46.9 11.2-56v-123c-20.8-8.5-24.6-30.7-18.6-45L142.6 101 8.5 235.1C3 240.6 0 247.9 0 255.5s3 15 8.5 20.4l195.6 195.7c5.4 5.4 12.7 8.4 20.4 8.4s15-3 20.4-8.4l194.7-194.7c5.4-5.4 8.4-12.8 8.4-20.4s-3-15-8.4-20.4"/></svg> </div> <div class=md-source__repository> GitHub </div> </a> </div> </nav> </header> <div class=md-container data-md-component=container> <main class=md-main data-md-component=main> <div class="md-main__inner md-grid"> <div class="md-sidebar md-sidebar--primary" data-md-component=sidebar data-md-type=navigation> <div class=md-sidebar__scrollwrap> <div class=md-sidebar__inner> <nav class="md-nav md-nav--primary md-nav--integrated" aria-label=Navigation data-md-level=0> <label class=md-nav__title for=__drawer> <a href=../.. title="Portable K8s GitOps Playbook" class="md-nav__button md-logo" aria-label="Portable K8s GitOps Playbook" data-md-component=logo> <svg xmlns=http://www.w3.org/2000/svg viewbox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg> </a> Portable K8s GitOps Playbook </label> <div class=md-nav__source> <a href=https://github.com/sojohnnysaid/portable-k8s title="Go to repository" class=md-source data-md-component=source> <div class="md-source__icon md-icon"> <svg xmlns=http://www.w3.org/2000/svg viewbox="0 0 448 512"><!-- Font Awesome Free 7.0.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path fill=currentColor d="M439.6 236.1 244 40.5c-5.4-5.5-12.8-8.5-20.4-8.5s-15 3-20.4 8.4L162.5 81l51.5 51.5c27.1-9.1 52.7 16.8 43.4 43.7l49.7 49.7c34.2-11.8 61.2 31 35.5 56.7-26.5 26.5-70.2-2.9-56-37.3L240.3 199v121.9c25.3 12.5 22.3 41.8 9.1 55-6.4 6.4-15.2 10.1-24.3 10.1s-17.8-3.6-24.3-10.1c-17.6-17.6-11.1-46.9 11.2-56v-123c-20.8-8.5-24.6-30.7-18.6-45L142.6 101 8.5 235.1C3 240.6 0 247.9 0 255.5s3 15 8.5 20.4l195.6 195.7c5.4 5.4 12.7 8.4 20.4 8.4s15-3 20.4-8.4l194.7-194.7c5.4-5.4 8.4-12.8 8.4-20.4s-3-15-8.4-20.4"/></svg> </div> <div class=md-source__repository> GitHub </div> </a> </div> <ul class=md-nav__list data-md-scrollfix> <li class=md-nav__item> <a href=../.. class=md-nav__link> <span class=md-ellipsis> Overview </span> </a> </li> <li class=md-nav__item> <a href=../../goals/ class=md-nav__link> <span class=md-ellipsis> Goals & Non-Goals </span> </a> </li> <li class=md-nav__item> <a href=../../principles/ class=md-nav__link> <span class=md-ellipsis> Principles </span> </a> </li> <li class="md-nav__item md-nav__item--section md-nav__item--nested"> <input class="md-nav__toggle md-toggle " type=checkbox id=__nav_4> <label class=md-nav__link for=__nav_4 id=__nav_4_label tabindex> <span class=md-ellipsis> Reference Architecture </span> <span class="md-nav__icon md-icon"></span> </label> <nav class=md-nav data-md-level=1 aria-labelledby=__nav_4_label aria-expanded=false> <label class=md-nav__title for=__nav_4> <span class="md-nav__icon md-icon"></span> Reference Architecture </label> <ul class=md-nav__list data-md-scrollfix> <li class=md-nav__item> <a href=../../reference/architecture/ class=md-nav__link> <span class=md-ellipsis> Bird’s-Eye View </span> </a> </li> <li class=md-nav__item> <a href=../../reference/networking/ class=md-nav__link> <span class=md-ellipsis> Networking & Links </span> </a> </li> </ul> </nav> </li> <li class=md-nav__item> <a href=../../environments/ class=md-nav__link> <span class=md-ellipsis> Environments & Parity </span> </a> </li> <li class=md-nav__item> <a href=../../toolchain/ class=md-nav__link> <span class=md-ellipsis> Toolchain </span> </a> </li> <li class=md-nav__item> <a href=../../repo-layout/ class=md-nav__link> <span class=md-ellipsis> Repo Layout & Branching </span> </a> </li> <li class="md-nav__item md-nav__item--section md-nav__item--nested"> <input class="md-nav__toggle md-toggle " type=checkbox id=__nav_8> <label class=md-nav__link for=__nav_8 id=__nav_8_label tabindex> <span class=md-ellipsis> CI/CD & GitOps </span> <span class="md-nav__icon md-icon"></span> </label> <nav class=md-nav data-md-level=1 aria-labelledby=__nav_8_label aria-expanded=false> <label class=md-nav__title for=__nav_8> <span class="md-nav__icon md-icon"></span> CI/CD & GitOps </label> <ul class=md-nav__list data-md-scrollfix> <li class=md-nav__item> <a href=../../cicd/app-pipeline/ class=md-nav__link> <span class=md-ellipsis> App Pipeline </span> </a> </li> <li class=md-nav__item> <a href=../../cicd/platform-pipeline/ class=md-nav__link> <span class=md-ellipsis> Platform Pipeline </span> </a> </li> <li class=md-nav__item> <a href=../../cicd/ephemeral-envs/ class=md-nav__link> <span class=md-ellipsis> Ephemeral Environments </span> </a> </li> </ul> </nav> </li> <li class=md-nav__item> <a href=../../data-state/ class=md-nav__link> <span class=md-ellipsis> Data & State </span> </a> </li> <li class=md-nav__item> <a href=../../security/ class=md-nav__link> <span class=md-ellipsis> Security Baseline </span> </a> </li> <li class=md-nav__item> <a href=../../observability/ class=md-nav__link> <span class=md-ellipsis> Observability & Ops </span> </a> </li> <li class="md-nav__item md-nav__item--section md-nav__item--nested"> <input class="md-nav__toggle md-toggle " type=checkbox id=__nav_12> <label class=md-nav__link for=__nav_12 id=__nav_12_label tabindex> <span class=md-ellipsis> Operations Runbooks </span> <span class="md-nav__icon md-icon"></span> </label> <nav class=md-nav data-md-level=1 aria-labelledby=__nav_12_label aria-expanded=false> <label class=md-nav__title for=__nav_12> <span class="md-nav__icon md-icon"></span> Operations Runbooks </label> <ul class=md-nav__list data-md-scrollfix> <li class=md-nav__item> <a href=../../runbooks/bootstrap/ class=md-nav__link> <span class=md-ellipsis> Bootstrap </span> </a> </li> <li class=md-nav__item> <a href=../../runbooks/upgrades/ class=md-nav__link> <span class=md-ellipsis> Upgrades </span> </a> </li> <li class=md-nav__item> <a href=../../runbooks/backups-restore/ class=md-nav__link> <span class=md-ellipsis> Backups & Restore </span> </a> </li> <li class=md-nav__item> <a href=../../runbooks/disaster-recovery/ class=md-nav__link> <span class=md-ellipsis> Disaster Recovery </span> </a> </li> </ul> </nav> </li> <li class="md-nav__item md-nav__item--active md-nav__item--section md-nav__item--nested"> <input class="md-nav__toggle md-toggle " type=checkbox id=__nav_13 checked> <label class=md-nav__link for=__nav_13 id=__nav_13_label tabindex> <span class=md-ellipsis> Local Dev Setup </span> <span class="md-nav__icon md-icon"></span> </label> <nav class=md-nav data-md-level=1 aria-labelledby=__nav_13_label aria-expanded=true> <label class=md-nav__title for=__nav_13> <span class="md-nav__icon md-icon"></span> Local Dev Setup </label> <ul class=md-nav__list data-md-scrollfix> <li class=md-nav__item> <a href=../phase1-environment-setup/ class=md-nav__link> <span class=md-ellipsis> Phase 1 - Local Development Environment Setup </span> </a> </li> <li class="md-nav__item md-nav__item--active"> <input class="md-nav__toggle md-toggle" type=checkbox id=__toc> <label class="md-nav__link md-nav__link--active" for=__toc> <span class=md-ellipsis> Phase 2 - GitOps Repository and ArgoCD Configuration </span> <span class="md-nav__icon md-icon"></span> </label> <a href=./ class="md-nav__link md-nav__link--active"> <span class=md-ellipsis> Phase 2 - GitOps Repository and ArgoCD Configuration </span> </a> <nav class="md-nav md-nav--secondary" aria-label="Table of contents"> <label class=md-nav__title for=__toc> <span class="md-nav__icon md-icon"></span> Table of contents </label> <ul class=md-nav__list data-md-component=toc data-md-scrollfix> <li class=md-nav__item> <a href=#prerequisites class=md-nav__link> <span class=md-ellipsis> Prerequisites </span> </a> </li> <li class=md-nav__item> <a href=#gitops-repository-setup class=md-nav__link> <span class=md-ellipsis> GitOps Repository Setup </span> </a> <nav class=md-nav aria-label="GitOps Repository Setup"> <ul class=md-nav__list> <li class=md-nav__item> <a href=#step-1-create-gitops-repository class=md-nav__link> <span class=md-ellipsis> Step 1: Create GitOps Repository </span> </a> </li> <li class=md-nav__item> <a href=#step-2-create-directory-structure class=md-nav__link> <span class=md-ellipsis> Step 2: Create Directory Structure </span> </a> </li> <li class=md-nav__item> <a href=#step-3-document-directory-structure class=md-nav__link> <span class=md-ellipsis> Step 3: Document Directory Structure </span> </a> </li> </ul> </nav> </li> <li class=md-nav__item> <a href=#infrastructure-components-setup class=md-nav__link> <span class=md-ellipsis> Infrastructure Components Setup </span> </a> <nav class=md-nav aria-label="Infrastructure Components Setup"> <ul class=md-nav__list> <li class=md-nav__item> <a href=#step-4-add-prometheus-grafana-stack class=md-nav__link> <span class=md-ellipsis> Step 4: Add Prometheus &amp; Grafana Stack </span> </a> </li> <li class=md-nav__item> <a href=#step-5-create-monitoring-values-file class=md-nav__link> <span class=md-ellipsis> Step 5: Create Monitoring Values File </span> </a> </li> <li class=md-nav__item> <a href=#step-6-add-efk-logging-stack class=md-nav__link> <span class=md-ellipsis> Step 6: Add EFK Logging Stack </span> </a> </li> <li class=md-nav__item> <a href=#step-7-create-efk-values-files class=md-nav__link> <span class=md-ellipsis> Step 7: Create EFK Values Files </span> </a> </li> </ul> </nav> </li> <li class=md-nav__item> <a href=#environment-specific-configurations class=md-nav__link> <span class=md-ellipsis> Environment-Specific Configurations </span> </a> <nav class=md-nav aria-label="Environment-Specific Configurations"> <ul class=md-nav__list> <li class=md-nav__item> <a href=#step-8-set-up-kustomize-overlays-for-dev-environment class=md-nav__link> <span class=md-ellipsis> Step 8: Set Up Kustomize Overlays for Dev Environment </span> </a> </li> <li class=md-nav__item> <a href=#step-9-set-up-prod-environment-overlay class=md-nav__link> <span class=md-ellipsis> Step 9: Set Up Prod Environment Overlay </span> </a> </li> </ul> </nav> </li> <li class=md-nav__item> <a href=#secrets-management class=md-nav__link> <span class=md-ellipsis> Secrets Management </span> </a> <nav class=md-nav aria-label="Secrets Management"> <ul class=md-nav__list> <li class=md-nav__item> <a href=#step-10-set-up-sops-for-secrets-encryption class=md-nav__link> <span class=md-ellipsis> Step 10: Set Up SOPS for Secrets Encryption </span> </a> </li> <li class=md-nav__item> <a href=#step-11-configure-ksops-in-argocd class=md-nav__link> <span class=md-ellipsis> Step 11: Configure KSOPS in ArgoCD </span> </a> </li> </ul> </nav> </li> <li class=md-nav__item> <a href=#argocd-repository-configuration class=md-nav__link> <span class=md-ellipsis> ArgoCD Repository Configuration </span> </a> <nav class=md-nav aria-label="ArgoCD Repository Configuration"> <ul class=md-nav__list> <li class=md-nav__item> <a href=#step-12-configure-repository-access class=md-nav__link> <span class=md-ellipsis> Step 12: Configure Repository Access </span> </a> </li> </ul> </nav> </li> <li class=md-nav__item> <a href=#deploying-monitoring-stack class=md-nav__link> <span class=md-ellipsis> Deploying Monitoring Stack </span> </a> <nav class=md-nav aria-label="Deploying Monitoring Stack"> <ul class=md-nav__list> <li class=md-nav__item> <a href=#step-13-clean-repository-structure class=md-nav__link> <span class=md-ellipsis> Step 13: Clean Repository Structure </span> </a> </li> <li class=md-nav__item> <a href=#step-14-create-monitoring-application class=md-nav__link> <span class=md-ellipsis> Step 14: Create Monitoring Application </span> </a> </li> <li class=md-nav__item> <a href=#step-15-deploy-monitoring-application class=md-nav__link> <span class=md-ellipsis> Step 15: Deploy Monitoring Application </span> </a> </li> <li class=md-nav__item> <a href=#step-16-access-grafana-dashboard class=md-nav__link> <span class=md-ellipsis> Step 16: Access Grafana Dashboard </span> </a> </li> <li class=md-nav__item> <a href=#step-17-verify-gitops-sync class=md-nav__link> <span class=md-ellipsis> Step 17: Verify GitOps Sync </span> </a> </li> <li class=md-nav__item> <a href=#step-18-commit-changes-to-git class=md-nav__link> <span class=md-ellipsis> Step 18: Commit Changes to Git </span> </a> </li> </ul> </nav> </li> <li class=md-nav__item> <a href=#phase-2-complete class=md-nav__link> <span class=md-ellipsis> Phase 2 Complete! </span> </a> <nav class=md-nav aria-label="Phase 2 Complete!"> <ul class=md-nav__list> <li class=md-nav__item> <a href=#summary-of-achievements class=md-nav__link> <span class=md-ellipsis> Summary of Achievements </span> </a> </li> <li class=md-nav__item> <a href=#running-services class=md-nav__link> <span class=md-ellipsis> Running Services </span> </a> </li> <li class=md-nav__item> <a href=#access-information class=md-nav__link> <span class=md-ellipsis> Access Information </span> </a> </li> <li class=md-nav__item> <a href=#key-configurations class=md-nav__link> <span class=md-ellipsis> Key Configurations </span> </a> </li> <li class=md-nav__item> <a href=#next-steps class=md-nav__link> <span class=md-ellipsis> Next Steps </span> </a> </li> <li class=md-nav__item> <a href=#troubleshooting-commands class=md-nav__link> <span class=md-ellipsis> Troubleshooting Commands </span> </a> </li> </ul> </nav> </li> </ul> </nav> </li> </ul> </nav> </li> <li class=md-nav__item> <a href=../../local-dev/ class=md-nav__link> <span class=md-ellipsis> Local Dev Workflow </span> </a> </li> <li class=md-nav__item> <a href=../../examples/ class=md-nav__link> <span class=md-ellipsis> Examples & Snippets </span> </a> </li> <li class=md-nav__item> <a href=../../risks-roadmap/ class=md-nav__link> <span class=md-ellipsis> Risks & Roadmap </span> </a> </li> <li class=md-nav__item> <a href=../../deliverables/ class=md-nav__link> <span class=md-ellipsis> Deliverables Checklist </span> </a> </li> <li class=md-nav__item> <a href=../../appendix/ class=md-nav__link> <span class=md-ellipsis> Appendix </span> </a> </li> </ul> </nav> </div> </div> </div> <div class=md-content data-md-component=content> <article class="md-content__inner md-typeset"> <h1 id=phase-2-gitops-repository-and-argocd-configuration>Phase 2: GitOps Repository and ArgoCD Configuration</h1> <p>This guide documents the setup of a GitOps repository structure and ArgoCD configuration for managing both local development and production environments.</p> <h2 id=prerequisites>Prerequisites</h2> <ul> <li>✅ Phase 1 Complete (Local K8s cluster with ArgoCD installed)</li> <li>✅ GitHub account with repository creation permissions</li> <li>✅ Git configured locally with SSH access to GitHub</li> </ul> <hr> <h2 id=gitops-repository-setup>GitOps Repository Setup</h2> <h3 id=step-1-create-gitops-repository>Step 1: Create GitOps Repository</h3> <p>Create a dedicated repository for Kubernetes manifests and configurations.</p> <p><strong>Repository Created:</strong> <div class=highlight><pre><span></span><code>Repository:<span class=w> </span>github.com/sojohnnysaid/k8s
+Type:<span class=w> </span>Private
+</code></pre></div></p> <p><strong>Clone and Initialize:</strong> <div class=highlight><pre><span></span><code>git<span class=w> </span>clone<span class=w> </span>git@github.com:sojohnnysaid/k8s.git
+<span class=nb>cd</span><span class=w> </span>k8s
+</code></pre></div></p> <p><strong>Status:</strong> ✅ Complete</p> <hr> <h3 id=step-2-create-directory-structure>Step 2: Create Directory Structure</h3> <p>Organize the repository for multi-environment support.</p> <p><strong>Create Directories:</strong> <div class=highlight><pre><span></span><code><span class=c1># Create environment directories</span>
+mkdir<span class=w> </span>-p<span class=w> </span>environments/dev
+mkdir<span class=w> </span>-p<span class=w> </span>environments/prod
+
+<span class=c1># Create base configurations</span>
+mkdir<span class=w> </span>-p<span class=w> </span>base/app
+mkdir<span class=w> </span>-p<span class=w> </span>base/infrastructure<span class=w>  </span>
+
+<span class=c1># Create Helm values directory</span>
+mkdir<span class=w> </span>-p<span class=w> </span>helm-values
+</code></pre></div></p> <p><strong>Actual Structure:</strong> <div class=highlight><pre><span></span><code>.
+├── README.md
+├── base
+│   ├── app
+│   └── infrastructure
+├── environments
+│   ├── dev
+│   └── prod
+├── helm-values
+├── local-notes.md
+└── prompt.md
+
+8 directories, 3 files
+</code></pre></div></p> <p><strong>Status:</strong> ✅ Complete</p> <hr> <h3 id=step-3-document-directory-structure>Step 3: Document Directory Structure</h3> <p>Add README files to document the purpose of each directory.</p> <p><strong>base/README.md:</strong> <div class=highlight><pre><span></span><code><span class=gh># Base Configurations</span>
+
+This directory contains base Kubernetes manifests and Helm charts that are shared across environments.
+
+<span class=k>-</span><span class=w> </span><span class=gs>**app/**</span>: Application manifests
+<span class=k>-</span><span class=w> </span><span class=gs>**infrastructure/**</span>: Infrastructure components (monitoring, logging, ingress, etc.)
+</code></pre></div></p> <p><strong>environments/README.md:</strong> <div class=highlight><pre><span></span><code><span class=gh># Environment-Specific Configurations</span>
+
+Environment-specific overlays and configurations.
+
+<span class=k>-</span><span class=w> </span><span class=gs>**dev/**</span>: Local development environment (K3s on Colima)
+<span class=k>-</span><span class=w> </span><span class=gs>**prod/**</span>: Production environment (Azure AKS)
+</code></pre></div></p> <p><strong>helm-values/README.md:</strong> <div class=highlight><pre><span></span><code><span class=gh># Helm Values</span>
+
+Environment-specific Helm values files for charts.
+</code></pre></div></p> <p><strong>Status:</strong> ✅ Complete</p> <hr> <h2 id=infrastructure-components-setup>Infrastructure Components Setup</h2> <h3 id=step-4-add-prometheus-grafana-stack>Step 4: Add Prometheus &amp; Grafana Stack</h3> <p>Configure the kube-prometheus-stack for monitoring.</p> <p><strong>Helm Repository Added:</strong> <div class=highlight><pre><span></span><code>prometheus-community    https://prometheus-community.github.io/helm-charts
+</code></pre></div></p> <p><strong>File Created: <code>base/infrastructure/monitoring/kustomization.yaml</code></strong> <div class=highlight><pre><span></span><code><span class=nt>apiVersion</span><span class=p>:</span><span class=w> </span><span class="l l-Scalar l-Scalar-Plain">kustomize.config.k8s.io/v1beta1</span>
+<span class=nt>kind</span><span class=p>:</span><span class=w> </span><span class="l l-Scalar l-Scalar-Plain">Kustomization</span>
+<span class=nt>namespace</span><span class=p>:</span><span class=w> </span><span class="l l-Scalar l-Scalar-Plain">monitoring</span>
+
+<span class=nt>helmCharts</span><span class=p>:</span>
+<span class=w>  </span><span class="p p-Indicator">-</span><span class=w> </span><span class=nt>name</span><span class=p>:</span><span class=w> </span><span class="l l-Scalar l-Scalar-Plain">kube-prometheus-stack</span>
+<span class=w>    </span><span class=nt>repo</span><span class=p>:</span><span class=w> </span><span class="l l-Scalar l-Scalar-Plain">https://prometheus-community.github.io/helm-charts</span>
+<span class=w>    </span><span class=nt>version</span><span class=p>:</span><span class=w> </span><span class="l l-Scalar l-Scalar-Plain">65.1.1</span>
+<span class=w>    </span><span class=nt>releaseName</span><span class=p>:</span><span class=w> </span><span class="l l-Scalar l-Scalar-Plain">monitoring</span>
+<span class=w>    </span><span class=nt>namespace</span><span class=p>:</span><span class=w> </span><span class="l l-Scalar l-Scalar-Plain">monitoring</span>
+<span class=w>    </span><span class=nt>valuesFile</span><span class=p>:</span><span class=w> </span><span class="l l-Scalar l-Scalar-Plain">values.yaml</span>
+</code></pre></div></p> <p><strong>Status:</strong> ✅ Complete</p> <hr> <h3 id=step-5-create-monitoring-values-file>Step 5: Create Monitoring Values File</h3> <p>Configure Prometheus and Grafana settings.</p> <p><strong>File Created: <code>base/infrastructure/monitoring/values.yaml</code></strong> <div class=highlight><pre><span></span><code><span class=c1># Grafana configuration</span>
+<span class=nt>grafana</span><span class=p>:</span>
+<span class=w>  </span><span class=nt>enabled</span><span class=p>:</span><span class=w> </span><span class="l l-Scalar l-Scalar-Plain">true</span>
+<span class=w>  </span><span class=nt>adminPassword</span><span class=p>:</span><span class=w> </span><span class="l l-Scalar l-Scalar-Plain">admin</span><span class=w>  </span><span class=c1># Change this in production!</span>
+<span class=w>  </span><span class=nt>service</span><span class=p>:</span>
+<span class=w>    </span><span class=nt>type</span><span class=p>:</span><span class=w> </span><span class="l l-Scalar l-Scalar-Plain">ClusterIP</span>
+<span class=w>  </span><span class=nt>ingress</span><span class=p>:</span>
+<span class=w>    </span><span class=nt>enabled</span><span class=p>:</span><span class=w> </span><span class="l l-Scalar l-Scalar-Plain">false</span>
+
+<span class=c1># Prometheus configuration</span>
+<span class=nt>prometheus</span><span class=p>:</span>
+<span class=w>  </span><span class=nt>prometheusSpec</span><span class=p>:</span>
+<span class=w>    </span><span class=nt>retention</span><span class=p>:</span><span class=w> </span><span class="l l-Scalar l-Scalar-Plain">7d</span>
+<span class=w>    </span><span class=nt>storageSpec</span><span class=p>:</span>
+<span class=w>      </span><span class=nt>volumeClaimTemplate</span><span class=p>:</span>
+<span class=w>        </span><span class=nt>spec</span><span class=p>:</span>
+<span class=w>          </span><span class=nt>accessModes</span><span class=p>:</span><span class=w> </span><span class="p p-Indicator">[</span><span class=s>&quot;ReadWriteOnce&quot;</span><span class="p p-Indicator">]</span>
+<span class=w>          </span><span class=nt>resources</span><span class=p>:</span>
+<span class=w>            </span><span class=nt>requests</span><span class=p>:</span>
+<span class=w>              </span><span class=nt>storage</span><span class=p>:</span><span class=w> </span><span class="l l-Scalar l-Scalar-Plain">10Gi</span>
+
+<span class=c1># AlertManager configuration</span>
+<span class=nt>alertmanager</span><span class=p>:</span>
+<span class=w>  </span><span class=nt>alertmanagerSpec</span><span class=p>:</span>
+<span class=w>    </span><span class=nt>storage</span><span class=p>:</span>
+<span class=w>      </span><span class=nt>volumeClaimTemplate</span><span class=p>:</span>
+<span class=w>        </span><span class=nt>spec</span><span class=p>:</span>
+<span class=w>          </span><span class=nt>accessModes</span><span class=p>:</span><span class=w> </span><span class="p p-Indicator">[</span><span class=s>&quot;ReadWriteOnce&quot;</span><span class="p p-Indicator">]</span>
+<span class=w>          </span><span class=nt>resources</span><span class=p>:</span>
+<span class=w>            </span><span class=nt>requests</span><span class=p>:</span>
+<span class=w>              </span><span class=nt>storage</span><span class=p>:</span><span class=w> </span><span class="l l-Scalar l-Scalar-Plain">2Gi</span>
+
+<span class=c1># Disable components we don&#39;t need in dev</span>
+<span class=nt>kubeEtcd</span><span class=p>:</span>
+<span class=w>  </span><span class=nt>enabled</span><span class=p>:</span><span class=w> </span><span class="l l-Scalar l-Scalar-Plain">false</span>
+<span class=nt>kubeControllerManager</span><span class=p>:</span>
+<span class=w>  </span><span class=nt>enabled</span><span class=p>:</span><span class=w> </span><span class="l l-Scalar l-Scalar-Plain">false</span>
+<span class=nt>kubeScheduler</span><span class=p>:</span>
+<span class=w>  </span><span class=nt>enabled</span><span class=p>:</span><span class=w> </span><span class="l l-Scalar l-Scalar-Plain">false</span>
+</code></pre></div></p> <p><strong>Status:</strong> ✅ Complete</p> <hr> <h3 id=step-6-add-efk-logging-stack>Step 6: Add EFK Logging Stack</h3> <p>Configure Elasticsearch, Fluent Bit, and Kibana for logging.</p> <p><strong>File Created: <code>base/infrastructure/logging/kustomization.yaml</code></strong> <div class=highlight><pre><span></span><code><span class=nt>apiVersion</span><span class=p>:</span><span class=w> </span><span class="l l-Scalar l-Scalar-Plain">kustomize.config.k8s.io/v1beta1</span>
+<span class=nt>kind</span><span class=p>:</span><span class=w> </span><span class="l l-Scalar l-Scalar-Plain">Kustomization</span>
+
+<span class=nt>namespace</span><span class=p>:</span><span class=w> </span><span class="l l-Scalar l-Scalar-Plain">logging</span>
+
+<span class=nt>helmCharts</span><span class=p>:</span>
+<span class="p p-Indicator">-</span><span class=w> </span><span class=nt>name</span><span class=p>:</span><span class=w> </span><span class="l l-Scalar l-Scalar-Plain">elasticsearch</span>
+<span class=w>  </span><span class=nt>repo</span><span class=p>:</span><span class=w> </span><span class="l l-Scalar l-Scalar-Plain">https://helm.elastic.co</span>
+<span class=w>  </span><span class=nt>version</span><span class=p>:</span><span class=w> </span><span class="l l-Scalar l-Scalar-Plain">8.5.1</span>
+<span class=w>  </span><span class=nt>releaseName</span><span class=p>:</span><span class=w> </span><span class="l l-Scalar l-Scalar-Plain">elasticsearch</span>
+<span class=w>  </span><span class=nt>namespace</span><span class=p>:</span><span class=w> </span><span class="l l-Scalar l-Scalar-Plain">logging</span>
+<span class=w>  </span><span class=nt>valuesFile</span><span class=p>:</span><span class=w> </span><span class="l l-Scalar l-Scalar-Plain">elasticsearch-values.yaml</span>
+
+<span class="p p-Indicator">-</span><span class=w> </span><span class=nt>name</span><span class=p>:</span><span class=w> </span><span class="l l-Scalar l-Scalar-Plain">kibana</span>
+<span class=w>  </span><span class=nt>repo</span><span class=p>:</span><span class=w> </span><span class="l l-Scalar l-Scalar-Plain">https://helm.elastic.co</span>
+<span class=w>  </span><span class=nt>version</span><span class=p>:</span><span class=w> </span><span class="l l-Scalar l-Scalar-Plain">8.5.1</span>
+<span class=w>  </span><span class=nt>releaseName</span><span class=p>:</span><span class=w> </span><span class="l l-Scalar l-Scalar-Plain">kibana</span>
+<span class=w>  </span><span class=nt>namespace</span><span class=p>:</span><span class=w> </span><span class="l l-Scalar l-Scalar-Plain">logging</span>
+<span class=w>  </span><span class=nt>valuesFile</span><span class=p>:</span><span class=w> </span><span class="l l-Scalar l-Scalar-Plain">kibana-values.yaml</span>
+
+<span class="p p-Indicator">-</span><span class=w> </span><span class=nt>name</span><span class=p>:</span><span class=w> </span><span class="l l-Scalar l-Scalar-Plain">fluent-bit</span>
+<span class=w>  </span><span class=nt>repo</span><span class=p>:</span><span class=w> </span><span class="l l-Scalar l-Scalar-Plain">https://fluent.github.io/helm-charts</span>
+<span class=w>  </span><span class=nt>version</span><span class=p>:</span><span class=w> </span><span class="l l-Scalar l-Scalar-Plain">0.24.0</span>
+<span class=w>  </span><span class=nt>releaseName</span><span class=p>:</span><span class=w> </span><span class="l l-Scalar l-Scalar-Plain">fluent-bit</span>
+<span class=w>  </span><span class=nt>namespace</span><span class=p>:</span><span class=w> </span><span class="l l-Scalar l-Scalar-Plain">logging</span>
+<span class=w>  </span><span class=nt>valuesFile</span><span class=p>:</span><span class=w> </span><span class="l l-Scalar l-Scalar-Plain">fluent-bit-values.yaml</span>
+</code></pre></div></p> <p><strong>Helm Repositories Added:</strong> <div class=highlight><pre><span></span><code>elastic                 https://helm.elastic.co
+fluent                  https://fluent.github.io/helm-charts
+</code></pre></div></p> <p><strong>Status:</strong> ✅ Complete</p> <hr> <h3 id=step-7-create-efk-values-files>Step 7: Create EFK Values Files</h3> <p>Create values files for Elasticsearch, Kibana, and Fluent Bit.</p> <p><strong>Files Created:</strong> - <code>base/infrastructure/logging/elasticsearch-values.yaml</code> - Single-node ES config for dev - <code>base/infrastructure/logging/kibana-values.yaml</code> - Kibana pointing to ES master - <code>base/infrastructure/logging/fluent-bit-values.yaml</code> - Log collection from all containers</p> <p><strong>Directory Structure:</strong> <div class=highlight><pre><span></span><code>base/infrastructure/logging/
+├── elasticsearch-values.yaml
+├── fluent-bit-values.yaml
+├── kibana-values.yaml
+└── kustomization.yaml
+</code></pre></div></p> <p><strong>Status:</strong> ✅ Complete</p> <hr> <h2 id=environment-specific-configurations>Environment-Specific Configurations</h2> <h3 id=step-8-set-up-kustomize-overlays-for-dev-environment>Step 8: Set Up Kustomize Overlays for Dev Environment</h3> <p>Create environment-specific overlays for the dev environment.</p> <p><strong>File Created: <code>environments/dev/kustomization.yaml</code></strong> <div class=highlight><pre><span></span><code><span class=nt>apiVersion</span><span class=p>:</span><span class=w> </span><span class="l l-Scalar l-Scalar-Plain">kustomize.config.k8s.io/v1beta1</span>
+<span class=nt>kind</span><span class=p>:</span><span class=w> </span><span class="l l-Scalar l-Scalar-Plain">Kustomization</span>
+
+<span class=c1># Reference base configurations</span>
+<span class=nt>resources</span><span class=p>:</span>
+<span class=w>  </span><span class="p p-Indicator">-</span><span class=w> </span><span class="l l-Scalar l-Scalar-Plain">../../base/infrastructure/monitoring</span>
+<span class=w>  </span><span class="p p-Indicator">-</span><span class=w> </span><span class="l l-Scalar l-Scalar-Plain">../../base/infrastructure/logging</span>
+
+<span class=c1># Dev-specific namespace</span>
+<span class=nt>namespace</span><span class=p>:</span><span class=w> </span><span class="l l-Scalar l-Scalar-Plain">dev</span>
+
+<span class=c1># Patches for dev environment</span>
+<span class=nt>patches</span><span class=p>:</span>
+<span class=w>  </span><span class="p p-Indicator">-</span><span class=w> </span><span class=nt>target</span><span class=p>:</span>
+<span class=w>      </span><span class=nt>kind</span><span class=p>:</span><span class=w> </span><span class="l l-Scalar l-Scalar-Plain">HelmChart</span>
+<span class=w>      </span><span class=nt>name</span><span class=p>:</span><span class=w> </span><span class="l l-Scalar l-Scalar-Plain">kube-prometheus-stack</span>
+<span class=w>    </span><span class=nt>patch</span><span class=p>:</span><span class=w> </span><span class="p p-Indicator">|-</span>
+<span class=w>      </span><span class=no>- op: replace</span>
+<span class=w>        </span><span class=no>path: /spec/valuesFile</span>
+<span class=w>        </span><span class=no>value: ../../helm-values/dev/monitoring-values.yaml</span>
+
+<span class=w>  </span><span class="p p-Indicator">-</span><span class=w> </span><span class=nt>target</span><span class=p>:</span>
+<span class=w>      </span><span class=nt>kind</span><span class=p>:</span><span class=w> </span><span class="l l-Scalar l-Scalar-Plain">HelmChart</span>
+<span class=w>      </span><span class=nt>name</span><span class=p>:</span><span class=w> </span><span class="l l-Scalar l-Scalar-Plain">elasticsearch</span>
+<span class=w>    </span><span class=nt>patch</span><span class=p>:</span><span class=w> </span><span class="p p-Indicator">|-</span>
+<span class=w>      </span><span class=no>- op: replace</span>
+<span class=w>        </span><span class=no>path: /spec/valuesFile</span>
+<span class=w>        </span><span class=no>value: ../../helm-values/dev/elasticsearch-values.yaml</span>
+
+<span class=c1># Common labels for all resources</span>
+<span class=nt>commonLabels</span><span class=p>:</span>
+<span class=w>  </span><span class=nt>environment</span><span class=p>:</span><span class=w> </span><span class="l l-Scalar l-Scalar-Plain">dev</span>
+<span class=w>  </span><span class=nt>managed-by</span><span class=p>:</span><span class=w> </span><span class="l l-Scalar l-Scalar-Plain">argocd</span>
+</code></pre></div></p> <p><strong>File Created: <code>helm-values/dev/monitoring-values.yaml</code></strong> - Dev-specific overrides for monitoring stack - Reduced retention and storage - AlertManager disabled for dev</p> <p><strong>Status:</strong> ✅ Complete</p> <hr> <h3 id=step-9-set-up-prod-environment-overlay>Step 9: Set Up Prod Environment Overlay</h3> <p>Create production environment configuration with enhanced settings.</p> <p><strong>File Created: <code>environments/prod/kustomization.yaml</code></strong> - References base infrastructure components - Uses production namespace - Patches to use prod-specific values</p> <p><strong>File Created: <code>helm-values/prod/monitoring-values.yaml</code></strong> - Longer retention periods (30d) - Larger storage allocations - Persistence enabled - AlertManager enabled</p> <p><strong>Status:</strong> ✅ Complete</p> <hr> <h2 id=secrets-management>Secrets Management</h2> <h3 id=step-10-set-up-sops-for-secrets-encryption>Step 10: Set Up SOPS for Secrets Encryption</h3> <p>Configure SOPS (Secrets OPerationS) with Age encryption for secure secret management in GitOps.</p> <p><strong>Why SOPS is Needed:</strong> GitOps requires all configurations to be stored in Git, but we cannot store secrets in plain text. SOPS allows us to: - Encrypt sensitive data before committing to Git - Decrypt automatically during deployment via ArgoCD - Maintain GitOps principles while keeping secrets secure - Track secret changes in version control without exposing values</p> <p><strong>Tools Installed:</strong> - <code>sops</code> - Encryption/decryption tool - <code>age</code> - Modern encryption tool (simpler than GPG)</p> <p><strong>Age Key Generated:</strong> <div class=highlight><pre><span></span><code>age-keygen -o ~/.sops/age/keys.txt
+# Public key: age1******* (your public key will appear here)
+# Private key: Stored securely in ~/.sops/age/keys.txt
+</code></pre></div></p> <p><strong>Files Created:</strong> - <code>.sops.yaml</code> - Configuration for automatic encryption rules - <code>base/infrastructure/secrets/grafana-secret.yaml</code> - Sample encrypted secret</p> <p><strong>Encryption Process:</strong> <div class=highlight><pre><span></span><code><span class=c1># Encrypts the file in place, replacing plain text with encrypted values</span>
+sops<span class=w> </span>-e<span class=w> </span>-i<span class=w> </span>path/to/secret.yaml
+</code></pre></div></p> <p><strong>File Created: <code>.sops.yaml</code></strong> <div class=highlight><pre><span></span><code><span class=nt>creation_rules</span><span class=p>:</span>
+<span class=w>  </span><span class="p p-Indicator">-</span><span class=w> </span><span class=nt>path_regex</span><span class=p>:</span><span class=w> </span><span class="l l-Scalar l-Scalar-Plain">.*secret.*\.yaml$</span>
+<span class=w>    </span><span class=nt>encrypted_regex</span><span class=p>:</span><span class=w> </span><span class="l l-Scalar l-Scalar-Plain">^(data|stringData)$</span>
+<span class=w>    </span><span class=nt>age</span><span class=p>:</span><span class=w> </span><span class="p p-Indicator">&gt;-</span>
+<span class=w>      </span><span class=no>age1******* # Your public key from age-keygen</span>
+</code></pre></div></p> <p><strong>Sample Secret Created: <code>base/infrastructure/secrets/grafana-secret.yaml</code></strong> (before encryption) <div class=highlight><pre><span></span><code><span class=nt>apiVersion</span><span class=p>:</span><span class=w> </span><span class="l l-Scalar l-Scalar-Plain">v1</span>
+<span class=nt>kind</span><span class=p>:</span><span class=w> </span><span class="l l-Scalar l-Scalar-Plain">Secret</span>
+<span class=nt>metadata</span><span class=p>:</span>
+<span class=w>  </span><span class=nt>name</span><span class=p>:</span><span class=w> </span><span class="l l-Scalar l-Scalar-Plain">grafana-admin</span>
+<span class=w>  </span><span class=nt>namespace</span><span class=p>:</span><span class=w> </span><span class="l l-Scalar l-Scalar-Plain">monitoring</span>
+<span class=nt>type</span><span class=p>:</span><span class=w> </span><span class="l l-Scalar l-Scalar-Plain">Opaque</span>
+<span class=nt>stringData</span><span class=p>:</span>
+<span class=w>  </span><span class=nt>admin-password</span><span class=p>:</span><span class=w> </span><span class="l l-Scalar l-Scalar-Plain">supersecretpassword</span>
+<span class=w>  </span><span class=nt>admin-user</span><span class=p>:</span><span class=w> </span><span class="l l-Scalar l-Scalar-Plain">admin</span>
+</code></pre></div></p> <p><strong>Encrypt the secret:</strong> <div class=highlight><pre><span></span><code>mkdir<span class=w> </span>-p<span class=w> </span>base/infrastructure/secrets
+sops<span class=w> </span>-e<span class=w> </span>-i<span class=w> </span>base/infrastructure/secrets/grafana-secret.yaml
+</code></pre></div></p> <p><strong>Status:</strong> ✅ Complete</p> <hr> <h3 id=step-11-configure-ksops-in-argocd>Step 11: Configure KSOPS in ArgoCD</h3> <p>Enable ArgoCD to decrypt SOPS-encrypted secrets using KSOPS plugin.</p> <p><strong>Create ArgoCD infrastructure directory:</strong> <div class=highlight><pre><span></span><code>mkdir<span class=w> </span>-p<span class=w> </span>base/infrastructure/argocd
+</code></pre></div></p> <p><strong>File Created: <code>base/infrastructure/argocd/repo-server-ksops-patch.yaml</code></strong> <div class=highlight><pre><span></span><code><span class=nt>apiVersion</span><span class=p>:</span><span class=w> </span><span class="l l-Scalar l-Scalar-Plain">apps/v1</span>
+<span class=nt>kind</span><span class=p>:</span><span class=w> </span><span class="l l-Scalar l-Scalar-Plain">Deployment</span>
+<span class=nt>metadata</span><span class=p>:</span>
+<span class=w>  </span><span class=nt>name</span><span class=p>:</span><span class=w> </span><span class="l l-Scalar l-Scalar-Plain">argocd-repo-server</span>
+<span class=w>  </span><span class=nt>namespace</span><span class=p>:</span><span class=w> </span><span class="l l-Scalar l-Scalar-Plain">argocd</span>
+<span class=nt>spec</span><span class=p>:</span>
+<span class=w>  </span><span class=nt>template</span><span class=p>:</span>
+<span class=w>    </span><span class=nt>spec</span><span class=p>:</span>
+<span class=w>      </span><span class=nt>volumes</span><span class=p>:</span>
+<span class=w>      </span><span class="p p-Indicator">-</span><span class=w> </span><span class=nt>name</span><span class=p>:</span><span class=w> </span><span class="l l-Scalar l-Scalar-Plain">custom-tools</span>
+<span class=w>        </span><span class=nt>emptyDir</span><span class=p>:</span><span class=w> </span><span class="p p-Indicator">{}</span>
+<span class=w>      </span><span class="p p-Indicator">-</span><span class=w> </span><span class=nt>name</span><span class=p>:</span><span class=w> </span><span class="l l-Scalar l-Scalar-Plain">sops-age</span>
+<span class=w>        </span><span class=nt>secret</span><span class=p>:</span>
+<span class=w>          </span><span class=nt>secretName</span><span class=p>:</span><span class=w> </span><span class="l l-Scalar l-Scalar-Plain">sops-age</span>
+<span class=w>      </span><span class=nt>initContainers</span><span class=p>:</span>
+<span class=w>      </span><span class="p p-Indicator">-</span><span class=w> </span><span class=nt>name</span><span class=p>:</span><span class=w> </span><span class="l l-Scalar l-Scalar-Plain">install-ksops</span>
+<span class=w>        </span><span class=nt>image</span><span class=p>:</span><span class=w> </span><span class="l l-Scalar l-Scalar-Plain">viaductoss/ksops:v4.2.1</span>
+<span class=w>        </span><span class=nt>command</span><span class=p>:</span><span class=w> </span><span class="p p-Indicator">[</span><span class=s>&quot;/bin/sh&quot;</span><span class="p p-Indicator">,</span><span class=w> </span><span class=s>&quot;-c&quot;</span><span class="p p-Indicator">]</span>
+<span class=w>        </span><span class=nt>args</span><span class=p>:</span>
+<span class=w>        </span><span class="p p-Indicator">-</span><span class=w> </span><span class="l l-Scalar l-Scalar-Plain">echo &quot;Installing KSOPS...&quot;;</span>
+<span class=w>          </span><span class="l l-Scalar l-Scalar-Plain">mv /usr/local/bin/ksops /custom-tools/;</span>
+<span class=w>          </span><span class="l l-Scalar l-Scalar-Plain">mv /usr/local/bin/kustomize /custom-tools/;</span>
+<span class=w>          </span><span class="l l-Scalar l-Scalar-Plain">echo &quot;Done.&quot;;</span>
+<span class=w>        </span><span class=nt>volumeMounts</span><span class=p>:</span>
+<span class=w>        </span><span class="p p-Indicator">-</span><span class=w> </span><span class=nt>mountPath</span><span class=p>:</span><span class=w> </span><span class="l l-Scalar l-Scalar-Plain">/custom-tools</span>
+<span class=w>          </span><span class=nt>name</span><span class=p>:</span><span class=w> </span><span class="l l-Scalar l-Scalar-Plain">custom-tools</span>
+<span class=w>      </span><span class=nt>containers</span><span class=p>:</span>
+<span class=w>      </span><span class="p p-Indicator">-</span><span class=w> </span><span class=nt>name</span><span class=p>:</span><span class=w> </span><span class="l l-Scalar l-Scalar-Plain">argocd-repo-server</span>
+<span class=w>        </span><span class=nt>volumeMounts</span><span class=p>:</span>
+<span class=w>        </span><span class="p p-Indicator">-</span><span class=w> </span><span class=nt>mountPath</span><span class=p>:</span><span class=w> </span><span class="l l-Scalar l-Scalar-Plain">/usr/local/bin/kustomize</span>
+<span class=w>          </span><span class=nt>name</span><span class=p>:</span><span class=w> </span><span class="l l-Scalar l-Scalar-Plain">custom-tools</span>
+<span class=w>          </span><span class=nt>subPath</span><span class=p>:</span><span class=w> </span><span class="l l-Scalar l-Scalar-Plain">kustomize</span>
+<span class=w>        </span><span class="p p-Indicator">-</span><span class=w> </span><span class=nt>mountPath</span><span class=p>:</span><span class=w> </span><span class="l l-Scalar l-Scalar-Plain">/usr/local/bin/ksops</span>
+<span class=w>          </span><span class=nt>name</span><span class=p>:</span><span class=w> </span><span class="l l-Scalar l-Scalar-Plain">custom-tools</span>
+<span class=w>          </span><span class=nt>subPath</span><span class=p>:</span><span class=w> </span><span class="l l-Scalar l-Scalar-Plain">ksops</span>
+<span class=w>        </span><span class="p p-Indicator">-</span><span class=w> </span><span class=nt>mountPath</span><span class=p>:</span><span class=w> </span><span class="l l-Scalar l-Scalar-Plain">/home/argocd/.config/sops/age</span>
+<span class=w>          </span><span class=nt>name</span><span class=p>:</span><span class=w> </span><span class="l l-Scalar l-Scalar-Plain">sops-age</span>
+<span class=w>        </span><span class=nt>env</span><span class=p>:</span>
+<span class=w>        </span><span class="p p-Indicator">-</span><span class=w> </span><span class=nt>name</span><span class=p>:</span><span class=w> </span><span class="l l-Scalar l-Scalar-Plain">SOPS_AGE_KEY_FILE</span>
+<span class=w>          </span><span class=nt>value</span><span class=p>:</span><span class=w> </span><span class="l l-Scalar l-Scalar-Plain">/home/argocd/.config/sops/age/keys.txt</span>
+<span class=w>        </span><span class="p p-Indicator">-</span><span class=w> </span><span class=nt>name</span><span class=p>:</span><span class=w> </span><span class="l l-Scalar l-Scalar-Plain">XDG_CONFIG_HOME</span>
+<span class=w>          </span><span class=nt>value</span><span class=p>:</span><span class=w> </span><span class="l l-Scalar l-Scalar-Plain">/home/argocd/.config</span>
+</code></pre></div></p> <p><strong>File Created: <code>base/infrastructure/argocd/kustomization.yaml</code></strong> <div class=highlight><pre><span></span><code><span class=nt>apiVersion</span><span class=p>:</span><span class=w> </span><span class="l l-Scalar l-Scalar-Plain">kustomize.config.k8s.io/v1beta1</span>
+<span class=nt>kind</span><span class=p>:</span><span class=w> </span><span class="l l-Scalar l-Scalar-Plain">Kustomization</span>
+
+<span class=nt>namespace</span><span class=p>:</span><span class=w> </span><span class="l l-Scalar l-Scalar-Plain">argocd</span>
+
+<span class=nt>patches</span><span class=p>:</span>
+<span class=w>  </span><span class="p p-Indicator">-</span><span class=w> </span><span class=nt>path</span><span class=p>:</span><span class=w> </span><span class="l l-Scalar l-Scalar-Plain">repo-server-ksops-patch.yaml</span>
+</code></pre></div></p> <p><strong>Create Age Secret:</strong> <div class=highlight><pre><span></span><code>kubectl<span class=w> </span>create<span class=w> </span>secret<span class=w> </span>generic<span class=w> </span>sops-age<span class=w> </span><span class=se>\</span>
+<span class=w>  </span>--namespace<span class=o>=</span>argocd<span class=w> </span><span class=se>\</span>
+<span class=w>  </span>--from-file<span class=o>=</span>keys.txt<span class=o>=</span><span class=nv>$HOME</span>/.sops/age/keys.txt
+</code></pre></div></p> <p><strong>Apply Patch:</strong> <div class=highlight><pre><span></span><code>kubectl<span class=w> </span>patch<span class=w> </span>deployment<span class=w> </span>argocd-repo-server<span class=w> </span>-n<span class=w> </span>argocd<span class=w> </span><span class=se>\</span>
+<span class=w>  </span>--patch-file<span class=w> </span>base/infrastructure/argocd/repo-server-ksops-patch.yaml
+</code></pre></div></p> <p><strong>Verification:</strong> <div class=highlight><pre><span></span><code>kubectl<span class=w> </span>rollout<span class=w> </span>status<span class=w> </span>deployment/argocd-repo-server<span class=w> </span>-n<span class=w> </span>argocd
+kubectl<span class=w> </span>get<span class=w> </span>pods<span class=w> </span>-n<span class=w> </span>argocd<span class=w> </span><span class=p>|</span><span class=w> </span>grep<span class=w> </span>repo-server
+</code></pre></div></p> <p><strong>Status:</strong> ✅ Complete</p> <hr> <h2 id=argocd-repository-configuration>ArgoCD Repository Configuration</h2> <h3 id=step-12-configure-repository-access>Step 12: Configure Repository Access</h3> <p>Configure ArgoCD to access your GitOps repository with proper authentication.</p> <p><strong>Configure HTTPS with TLS bypass (for corporate networks with SSL interception):</strong> <div class=highlight><pre><span></span><code>kubectl<span class=w> </span>edit<span class=w> </span>configmap<span class=w> </span>argocd-cm<span class=w> </span>-n<span class=w> </span>argocd
+</code></pre></div></p> <p><strong>Add to the ConfigMap:</strong> <div class=highlight><pre><span></span><code><span class=nt>data</span><span class=p>:</span>
+<span class=w>  </span><span class=nt>repositories</span><span class=p>:</span><span class=w> </span><span class="p p-Indicator">|</span>
+<span class=w>    </span><span class=no>- url: https://github.com</span>
+<span class=w>      </span><span class=no>insecure: true</span>
+<span class=w>  </span><span class=nt>repository.credentials</span><span class=p>:</span><span class=w> </span><span class="p p-Indicator">|</span>
+<span class=w>    </span><span class=no>- url: https://github.com</span>
+<span class=w>      </span><span class=no>insecureIgnoreHostKey: true</span>
+<span class=w>      </span><span class=no>insecureSkipServerVerification: true</span>
+</code></pre></div></p> <p><strong>Alternative: Create repository secret with SSH:</strong> <div class=highlight><pre><span></span><code><span class=c1># Create SSH secret</span>
+kubectl<span class=w> </span>create<span class=w> </span>secret<span class=w> </span>generic<span class=w> </span>k8s-repo-ssh<span class=w> </span><span class=se>\</span>
+<span class=w>  </span>--namespace<span class=o>=</span>argocd<span class=w> </span><span class=se>\</span>
+<span class=w>  </span>--from-file<span class=o>=</span><span class=nv>sshPrivateKey</span><span class=o>=</span><span class=nv>$HOME</span>/.ssh/id_ed25519<span class=w> </span><span class=se>\</span>
+<span class=w>  </span>--from-literal<span class=o>=</span><span class=nv>type</span><span class=o>=</span>git<span class=w> </span><span class=se>\</span>
+<span class=w>  </span>--from-literal<span class=o>=</span><span class=nv>url</span><span class=o>=</span>git@github.com:sojohnnysaid/k8s.git
+
+<span class=c1># Label the secret</span>
+kubectl<span class=w> </span>label<span class=w> </span>secret<span class=w> </span>k8s-repo-ssh<span class=w> </span>-n<span class=w> </span>argocd<span class=w> </span><span class=se>\</span>
+<span class=w>  </span>argocd.argoproj.io/secret-type<span class=o>=</span>repository
+</code></pre></div></p> <p><strong>Verify repository configuration:</strong> <div class=highlight><pre><span></span><code>kubectl<span class=w> </span>get<span class=w> </span>secrets<span class=w> </span>-n<span class=w> </span>argocd<span class=w> </span>-l<span class=w> </span>argocd.argoproj.io/secret-type<span class=o>=</span>repository
+</code></pre></div></p> <p><strong>Expected Output:</strong> <div class=highlight><pre><span></span><code>NAME              TYPE     DATA   AGE
+k8s-repo-ssh      Opaque   3      XXm
+</code></pre></div></p> <p><strong>Status:</strong> ✅ Complete</p> <hr> <h2 id=deploying-monitoring-stack>Deploying Monitoring Stack</h2> <h3 id=step-13-clean-repository-structure>Step 13: Clean Repository Structure</h3> <p>Organize the repository for clean application deployment.</p> <p><strong>Create directory structure:</strong> <div class=highlight><pre><span></span><code><span class=nb>cd</span><span class=w> </span>/path/to/your/k8s-repo
+
+<span class=c1># Create ArgoCD applications directory</span>
+mkdir<span class=w> </span>-p<span class=w> </span>argocd-apps
+
+<span class=c1># Archive any test applications</span>
+mkdir<span class=w> </span>-p<span class=w> </span>archive/test-apps
+mv<span class=w> </span>argocd-apps/test*<span class=w> </span>archive/test-apps/<span class=w> </span><span class=m>2</span>&gt;/dev/null<span class=w> </span><span class=o>||</span><span class=w> </span><span class=nb>true</span>
+</code></pre></div></p> <p><strong>Repository structure:</strong> <div class=highlight><pre><span></span><code>k8s/
+├── argocd-apps/           # ArgoCD application definitions
+├── base/                  # Base configurations
+│   └── infrastructure/    # Infrastructure components
+├── environments/          # Environment-specific configs
+│   ├── dev/
+│   └── prod/
+└── helm-values/          # Helm value overrides
+</code></pre></div></p> <p><strong>Status:</strong> ✅ Complete</p> <hr> <h3 id=step-14-create-monitoring-application>Step 14: Create Monitoring Application</h3> <p>Define the monitoring stack application for ArgoCD.</p> <p><strong>Create application manifest:</strong> <div class=highlight><pre><span></span><code>cat<span class=w> </span>&gt;<span class=w> </span>argocd-apps/monitoring-dev.yaml<span class=w> </span><span class=s>&lt;&lt; &#39;EOF&#39;</span>
+<span class=s>apiVersion: argoproj.io/v1alpha1</span>
+<span class=s>kind: Application</span>
+<span class=s>metadata:</span>
+<span class=s>  name: monitoring-dev</span>
+<span class=s>  namespace: argocd</span>
+<span class=s>  finalizers:</span>
+<span class=s>    - resources-finalizer.argocd.argoproj.io</span>
+<span class=s>spec:</span>
+<span class=s>  project: default</span>
+<span class=s>  source:</span>
+<span class=s>    repoURL: https://prometheus-community.github.io/helm-charts</span>
+<span class=s>    chart: kube-prometheus-stack</span>
+<span class=s>    targetRevision: 65.1.1</span>
+<span class=s>    helm:</span>
+<span class=s>      releaseName: monitoring</span>
+<span class=s>      values: |</span>
+<span class=s>        # Grafana configuration</span>
+<span class=s>        grafana:</span>
+<span class=s>          adminPassword: admin  # Change in production!</span>
+<span class=s>          persistence:</span>
+<span class=s>            enabled: false  # No persistence for local dev</span>
+<span class=s>          service:</span>
+<span class=s>            type: ClusterIP</span>
+
+<span class=s>        # Prometheus configuration</span>
+<span class=s>        prometheus:</span>
+<span class=s>          prometheusSpec:</span>
+<span class=s>            retention: 1d  # Short retention for local dev</span>
+<span class=s>            storageSpec:</span>
+<span class=s>              volumeClaimTemplate:</span>
+<span class=s>                spec:</span>
+<span class=s>                  accessModes: [&quot;ReadWriteOnce&quot;]</span>
+<span class=s>                  resources:</span>
+<span class=s>                    requests:</span>
+<span class=s>                      storage: 5Gi</span>
+
+<span class=s>        # Disable unnecessary components for local dev</span>
+<span class=s>        alertmanager:</span>
+<span class=s>          enabled: false</span>
+<span class=s>        kubeEtcd:</span>
+<span class=s>          enabled: false</span>
+<span class=s>        kubeControllerManager:</span>
+<span class=s>          enabled: false</span>
+<span class=s>        kubeScheduler:</span>
+<span class=s>          enabled: false</span>
+<span class=s>  destination:</span>
+<span class=s>    server: https://kubernetes.default.svc</span>
+<span class=s>    namespace: monitoring</span>
+<span class=s>  syncPolicy:</span>
+<span class=s>    automated:</span>
+<span class=s>      prune: true</span>
+<span class=s>      selfHeal: true</span>
+<span class=s>    syncOptions:</span>
+<span class=s>      - CreateNamespace=true</span>
+<span class=s>      - ServerSideApply=true  # Important for CRD size issues</span>
+<span class=s>EOF</span>
+</code></pre></div></p> <p><strong>Note:</strong> The <code>ServerSideApply=true</code> option is crucial for handling Prometheus CRDs that have large annotations.</p> <p><strong>Status:</strong> ✅ Complete</p> <hr> <h3 id=step-15-deploy-monitoring-application>Step 15: Deploy Monitoring Application</h3> <p>Apply the monitoring application to ArgoCD.</p> <p><strong>Deploy the application:</strong> <div class=highlight><pre><span></span><code>kubectl<span class=w> </span>apply<span class=w> </span>-f<span class=w> </span>argocd-apps/monitoring-dev.yaml
+</code></pre></div></p> <p><strong>Monitor deployment status:</strong> <div class=highlight><pre><span></span><code><span class=c1># Check application status</span>
+kubectl<span class=w> </span>get<span class=w> </span>application<span class=w> </span>monitoring-dev<span class=w> </span>-n<span class=w> </span>argocd<span class=w> </span>-w
+
+<span class=c1># Expected progression:</span>
+<span class=c1># NAME             SYNC STATUS   HEALTH STATUS</span>
+<span class=c1># monitoring-dev   OutOfSync     Missing</span>
+<span class=c1># monitoring-dev   Synced        Progressing</span>
+<span class=c1># monitoring-dev   Synced        Healthy</span>
+</code></pre></div></p> <p><strong>Verify pods are running:</strong> <div class=highlight><pre><span></span><code>kubectl<span class=w> </span>get<span class=w> </span>pods<span class=w> </span>-n<span class=w> </span>monitoring
+</code></pre></div></p> <p><strong>Expected Output:</strong> <div class=highlight><pre><span></span><code>NAME                                                   READY   STATUS    RESTARTS
+monitoring-grafana-xxx                                 3/3     Running   0
+monitoring-kube-prometheus-operator-xxx                1/1     Running   0
+monitoring-kube-state-metrics-xxx                      1/1     Running   0
+monitoring-prometheus-node-exporter-xxx                1/1     Running   0
+prometheus-monitoring-kube-prometheus-prometheus-0     2/2     Running   0
+</code></pre></div></p> <p><strong>Status:</strong> ✅ Complete</p> <hr> <h3 id=step-16-access-grafana-dashboard>Step 16: Access Grafana Dashboard</h3> <p>Set up access to the Grafana web interface.</p> <p><strong>Port-forward Grafana:</strong> <div class=highlight><pre><span></span><code>kubectl<span class=w> </span>port-forward<span class=w> </span>-n<span class=w> </span>monitoring<span class=w> </span>svc/monitoring-grafana<span class=w> </span><span class=m>3000</span>:80
+</code></pre></div></p> <p><strong>Get admin password:</strong> <div class=highlight><pre><span></span><code>kubectl<span class=w> </span>get<span class=w> </span>secret<span class=w> </span>monitoring-grafana<span class=w> </span>-n<span class=w> </span>monitoring<span class=w> </span><span class=se>\</span>
+<span class=w>  </span>-o<span class=w> </span><span class=nv>jsonpath</span><span class=o>=</span><span class=s2>&quot;{.data.admin-password}&quot;</span><span class=w> </span><span class=p>|</span><span class=w> </span>base64<span class=w> </span>-d<span class=w> </span><span class=o>&amp;&amp;</span><span class=w> </span><span class=nb>echo</span>
+</code></pre></div></p> <p><strong>Access Grafana:</strong> - URL: http://localhost:3000 - Username: <code>admin</code> - Password: (from command above, default is <code>admin</code>)</p> <p><strong>Verify dashboards:</strong> 1. Navigate to Dashboards → Browse 2. You should see pre-configured Kubernetes dashboards 3. Check "Kubernetes / API server" for cluster metrics</p> <p><strong>Status:</strong> ✅ Complete</p> <hr> <h3 id=step-17-verify-gitops-sync>Step 17: Verify GitOps Sync</h3> <p>Confirm ArgoCD is managing the deployment via GitOps.</p> <p><strong>Check in ArgoCD UI:</strong> <div class=highlight><pre><span></span><code><span class=c1># Port-forward ArgoCD</span>
+kubectl<span class=w> </span>port-forward<span class=w> </span>svc/argocd-server<span class=w> </span>-n<span class=w> </span>argocd<span class=w> </span><span class=m>8080</span>:443
+
+<span class=c1># Get admin password</span>
+kubectl<span class=w> </span>-n<span class=w> </span>argocd<span class=w> </span>get<span class=w> </span>secret<span class=w> </span>argocd-initial-admin-secret<span class=w> </span><span class=se>\</span>
+<span class=w>  </span>-o<span class=w> </span><span class=nv>jsonpath</span><span class=o>=</span><span class=s2>&quot;{.data.password}&quot;</span><span class=w> </span><span class=p>|</span><span class=w> </span>base64<span class=w> </span>-d<span class=w> </span><span class=o>&amp;&amp;</span><span class=w> </span><span class=nb>echo</span>
+</code></pre></div></p> <p><strong>Access ArgoCD:</strong> - URL: https://localhost:8080 - Username: <code>admin</code> - Password: (from command above)</p> <p><strong>Verify application in UI:</strong> - Application should show as "Synced" and "Healthy" - All resources should be green - Auto-sync should be enabled</p> <p><strong>Status:</strong> ✅ Complete</p> <hr> <h3 id=step-18-commit-changes-to-git>Step 18: Commit Changes to Git</h3> <p>Save your configuration to the GitOps repository.</p> <p><strong>Commit and push:</strong> <div class=highlight><pre><span></span><code><span class=c1># Add monitoring application</span>
+git<span class=w> </span>add<span class=w> </span>argocd-apps/monitoring-dev.yaml
+
+<span class=c1># Add gitignore for archive</span>
+<span class=nb>echo</span><span class=w> </span><span class=s2>&quot;archive/&quot;</span><span class=w> </span>&gt;&gt;<span class=w> </span>.gitignore
+git<span class=w> </span>add<span class=w> </span>.gitignore
+
+<span class=c1># Commit</span>
+git<span class=w> </span>commit<span class=w> </span>-m<span class=w> </span><span class=s2>&quot;feat: add monitoring stack deployment</span>
+
+<span class=s2>- kube-prometheus-stack v65.1.1 via Helm</span>
+<span class=s2>- Dev-optimized configuration</span>
+<span class=s2>- ServerSideApply for CRD handling</span>
+<span class=s2>- Auto-sync enabled&quot;</span>
+
+<span class=c1># Push to GitHub</span>
+git<span class=w> </span>push<span class=w> </span>origin<span class=w> </span>main
+</code></pre></div></p> <p><strong>Verify GitOps:</strong> After pushing, ArgoCD should detect no changes needed (already in sync).</p> <p><strong>Status:</strong> ✅ Complete</p> <hr> <h2 id=phase-2-complete>Phase 2 Complete!</h2> <h3 id=summary-of-achievements>Summary of Achievements</h3> <p>You have successfully:</p> <table> <thead> <tr> <th>Component</th> <th>Status</th> <th>Details</th> </tr> </thead> <tbody> <tr> <td><strong>GitOps Repository</strong></td> <td>✅</td> <td>Created and structured at <code>github.com/sojohnnysaid/k8s</code></td> </tr> <tr> <td><strong>Directory Structure</strong></td> <td>✅</td> <td>Organized with <code>argocd-apps/</code>, <code>base/</code>, <code>environments/</code>, <code>helm-values/</code></td> </tr> <tr> <td><strong>SOPS Encryption</strong></td> <td>✅</td> <td>Age encryption configured for secrets management</td> </tr> <tr> <td><strong>KSOPS Integration</strong></td> <td>✅</td> <td>ArgoCD configured to decrypt SOPS secrets</td> </tr> <tr> <td><strong>Repository Access</strong></td> <td>✅</td> <td>SSH and HTTPS with TLS bypass configured</td> </tr> <tr> <td><strong>Monitoring Stack</strong></td> <td>✅</td> <td>kube-prometheus-stack v65.1.1 deployed</td> </tr> <tr> <td><strong>Grafana</strong></td> <td>✅</td> <td>Accessible with pre-configured dashboards</td> </tr> <tr> <td><strong>GitOps Sync</strong></td> <td>✅</td> <td>ArgoCD auto-syncing from Git repository</td> </tr> </tbody> </table> <h3 id=running-services>Running Services</h3> <p><strong>Monitoring Stack Components:</strong> - <strong>Prometheus</strong>: Collecting and storing metrics (5GB storage, 1 day retention) - <strong>Grafana</strong>: Visualization with Kubernetes dashboards (port 3000) - <strong>Node Exporter</strong>: Host metrics collection - <strong>Kube State Metrics</strong>: Kubernetes object metrics - <strong>Prometheus Operator</strong>: Managing Prometheus configuration</p> <h3 id=access-information>Access Information</h3> <p><strong>ArgoCD UI:</strong> <div class=highlight><pre><span></span><code>kubectl<span class=w> </span>port-forward<span class=w> </span>svc/argocd-server<span class=w> </span>-n<span class=w> </span>argocd<span class=w> </span><span class=m>8080</span>:443
+<span class=c1># URL: https://localhost:8080</span>
+<span class=c1># Username: admin</span>
+<span class=c1># Password: kubectl -n argocd get secret argocd-initial-admin-secret -o jsonpath=&quot;{.data.password}&quot; | base64 -d</span>
+</code></pre></div></p> <p><strong>Grafana UI:</strong> <div class=highlight><pre><span></span><code>kubectl<span class=w> </span>port-forward<span class=w> </span>-n<span class=w> </span>monitoring<span class=w> </span>svc/monitoring-grafana<span class=w> </span><span class=m>3000</span>:80
+<span class=c1># URL: http://localhost:3000</span>
+<span class=c1># Username: admin</span>
+<span class=c1># Password: admin</span>
+</code></pre></div></p> <h3 id=key-configurations>Key Configurations</h3> <p><strong>Repository Structure:</strong> <div class=highlight><pre><span></span><code>k8s/
+├── argocd-apps/
+│   └── monitoring-dev.yaml    # Monitoring application definition
+├── base/                      # Base configurations (for Kustomize approach)
+├── environments/              # Environment-specific overlays
+│   ├── dev/
+│   └── prod/
+├── helm-values/              # Helm value overrides
+└── archive/                  # Archived test applications
+</code></pre></div></p> <p><strong>Important Settings:</strong> - <strong>ServerSideApply</strong>: Enabled to handle large CRD annotations - <strong>Auto-sync</strong>: Enabled for automatic deployment from Git - <strong>TLS Verification</strong>: Bypassed for corporate network compatibility - <strong>Resource Limits</strong>: Optimized for local development (1 day retention, no AlertManager)</p> <h3 id=next-steps>Next Steps</h3> <p>With Phase 2 complete, you're ready to: - <strong>Phase 3</strong>: Set up CI/CD pipeline with GitHub Actions - <strong>Phase 4</strong>: Configure Azure AKS for production - <strong>Phase 5</strong>: Deploy full observability stack (EFK logging) - <strong>Phase 6</strong>: Implement advanced secrets management - <strong>Phase 7</strong>: Configure Velero for backups - <strong>Phase 8</strong>: Apply security policies</p> <h3 id=troubleshooting-commands>Troubleshooting Commands</h3> <p><strong>Check application sync status:</strong> <div class=highlight><pre><span></span><code>kubectl<span class=w> </span>get<span class=w> </span>applications<span class=w> </span>-n<span class=w> </span>argocd
+argocd<span class=w> </span>app<span class=w> </span>get<span class=w> </span>monitoring-dev
+</code></pre></div></p> <p><strong>View ArgoCD logs:</strong> <div class=highlight><pre><span></span><code>kubectl<span class=w> </span>logs<span class=w> </span>-n<span class=w> </span>argocd<span class=w> </span>deployment/argocd-server
+kubectl<span class=w> </span>logs<span class=w> </span>-n<span class=w> </span>argocd<span class=w> </span>deployment/argocd-repo-server
+</code></pre></div></p> <p><strong>Check monitoring pods:</strong> <div class=highlight><pre><span></span><code>kubectl<span class=w> </span>get<span class=w> </span>pods<span class=w> </span>-n<span class=w> </span>monitoring
+kubectl<span class=w> </span>describe<span class=w> </span>pod<span class=w> </span>&lt;pod-name&gt;<span class=w> </span>-n<span class=w> </span>monitoring
+</code></pre></div></p> <p><strong>Test GitOps sync:</strong> <div class=highlight><pre><span></span><code><span class=c1># Make a change in the repository</span>
+<span class=c1># ArgoCD should detect and sync within 3 minutes</span>
+argocd<span class=w> </span>app<span class=w> </span>sync<span class=w> </span>monitoring-dev
+</code></pre></div></p> <hr> <aside class=md-source-file> <span class=md-source-file__fact> <span class=md-icon title="Last update"> <svg xmlns=http://www.w3.org/2000/svg viewbox="0 0 24 24"><path d="M21 13.1c-.1 0-.3.1-.4.2l-1 1 2.1 2.1 1-1c.2-.2.2-.6 0-.8l-1.3-1.3c-.1-.1-.2-.2-.4-.2m-1.9 1.8-6.1 6V23h2.1l6.1-6.1zM12.5 7v5.2l4 2.4-1 1L11 13V7zM11 21.9c-5.1-.5-9-4.8-9-9.9C2 6.5 6.5 2 12 2c5.3 0 9.6 4.1 10 9.3-.3-.1-.6-.2-1-.2s-.7.1-1 .2C19.6 7.2 16.2 4 12 4c-4.4 0-8 3.6-8 8 0 4.1 3.1 7.5 7.1 7.9l-.1.2z"/></svg> </span> <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-date" title="August 13, 2025 10:36:40 UTC">August 13, 2025</span> </span> </aside> </article> </div> <script>var tabs=__md_get("__tabs");if(Array.isArray(tabs))e:for(var set of document.querySelectorAll(".tabbed-set")){var labels=set.querySelector(".tabbed-labels");for(var tab of tabs)for(var label of labels.getElementsByTagName("label"))if(label.innerText.trim()===tab){var input=document.getElementById(label.htmlFor);input.checked=!0;continue e}}</script> <script>var target=document.getElementById(location.hash.slice(1));target&&target.name&&(target.checked=target.name.startsWith("__tabbed_"))</script> </div> <button type=button class="md-top md-icon" data-md-component=top hidden> <svg xmlns=http://www.w3.org/2000/svg viewbox="0 0 24 24"><path d="M13 20h-2V8l-5.5 5.5-1.42-1.42L12 4.16l7.92 7.92-1.42 1.42L13 8z"/></svg> Back to top </button> </main> <footer class=md-footer> <div class="md-footer-meta md-typeset"> <div class="md-footer-meta__inner md-grid"> <div class=md-copyright> Made with <a href=https://squidfunk.github.io/mkdocs-material/ target=_blank rel=noopener> Material for MkDocs </a> </div> </div> </div> </footer> </div> <div class=md-dialog data-md-component=dialog> <div class="md-dialog__inner md-typeset"></div> </div> <script id=__config type=application/json>{"base": "../..", "features": ["navigation.instant", "navigation.sections", "navigation.top", "search.suggest", "search.highlight", "content.code.copy", "content.tabs.link", "toc.integrate"], "search": "../../assets/javascripts/workers/search.d50fe291.min.js", "tags": null, "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": {"default": "latest", "provider": "mike"}}</script> <script src=../../assets/javascripts/bundle.50899def.min.js></script> <script id=init-glightbox>const lightbox = GLightbox({"touchNavigation": true, "loop": false, "zoomable": true, "draggable": true, "openEffect": "zoom", "closeEffect": "zoom", "slideEffect": "slide"});
+document$.subscribe(() => { lightbox.reload() });
+</script></body> </html>

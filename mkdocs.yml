@@ -84,6 +84,9 @@ nav:
       - Upgrades: runbooks/upgrades.md
       - Backups & Restore: runbooks/backups-restore.md
       - Disaster Recovery: runbooks/disaster-recovery.md
+  - Local Dev Setup:
+      - Phase 1 - Local Development Environment Setup: local-setup/phase1-environment-setup.md
+      - Phase 2 - GitOps Repository and ArgoCD Configuration: local-setup/phase2-gitops-setup.md
   - Local Dev Workflow: local-dev.md
   - Examples & Snippets: examples.md
   - Risks & Roadmap: risks-roadmap.md
