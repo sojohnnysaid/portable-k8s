@@ -39,7 +39,7 @@ plugins:
   - redirects:
       redirect_maps:
         # Add old_page.md: new_page.md here when you move content
-        old-page.md: new-page.md
+        # old-page.md: new-page.md
   - glightbox:
       auto_caption: true
   - minify:
