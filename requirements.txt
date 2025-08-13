@@ -1,0 +1,16 @@
+# Core
+mkdocs
+mkdocs-material
+
+# Plugins used in mkdocs.yml
+mkdocs-git-revision-date-localized-plugin
+mkdocs-redirects
+mkdocs-glightbox
+mkdocs-minify-plugin
+
+# Markdown extensions you enabled
+pymdown-extensions
+
+# Versioning provider
+mike
+
