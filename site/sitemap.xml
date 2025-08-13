@@ -1,95 +1,95 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
     <url>
-         <loc>https://sojohnnysaid.github.io/portable-k8s/0.1/</loc>
+         <loc>https://sojohnnysaid.github.io/portable-k8s/dev/</loc>
          <lastmod>2025-08-13</lastmod>
     </url>
     <url>
-         <loc>https://sojohnnysaid.github.io/portable-k8s/0.1/appendix/</loc>
+         <loc>https://sojohnnysaid.github.io/portable-k8s/dev/appendix/</loc>
          <lastmod>2025-08-13</lastmod>
     </url>
     <url>
-         <loc>https://sojohnnysaid.github.io/portable-k8s/0.1/data-state/</loc>
+         <loc>https://sojohnnysaid.github.io/portable-k8s/dev/data-state/</loc>
          <lastmod>2025-08-13</lastmod>
     </url>
     <url>
-         <loc>https://sojohnnysaid.github.io/portable-k8s/0.1/deliverables/</loc>
+         <loc>https://sojohnnysaid.github.io/portable-k8s/dev/deliverables/</loc>
          <lastmod>2025-08-13</lastmod>
     </url>
     <url>
-         <loc>https://sojohnnysaid.github.io/portable-k8s/0.1/environments/</loc>
+         <loc>https://sojohnnysaid.github.io/portable-k8s/dev/environments/</loc>
          <lastmod>2025-08-13</lastmod>
     </url>
     <url>
-         <loc>https://sojohnnysaid.github.io/portable-k8s/0.1/examples/</loc>
+         <loc>https://sojohnnysaid.github.io/portable-k8s/dev/examples/</loc>
          <lastmod>2025-08-13</lastmod>
     </url>
     <url>
-         <loc>https://sojohnnysaid.github.io/portable-k8s/0.1/goals/</loc>
+         <loc>https://sojohnnysaid.github.io/portable-k8s/dev/goals/</loc>
          <lastmod>2025-08-13</lastmod>
     </url>
     <url>
-         <loc>https://sojohnnysaid.github.io/portable-k8s/0.1/local-dev/</loc>
+         <loc>https://sojohnnysaid.github.io/portable-k8s/dev/local-dev/</loc>
          <lastmod>2025-08-13</lastmod>
     </url>
     <url>
-         <loc>https://sojohnnysaid.github.io/portable-k8s/0.1/observability/</loc>
+         <loc>https://sojohnnysaid.github.io/portable-k8s/dev/observability/</loc>
          <lastmod>2025-08-13</lastmod>
     </url>
     <url>
-         <loc>https://sojohnnysaid.github.io/portable-k8s/0.1/principles/</loc>
+         <loc>https://sojohnnysaid.github.io/portable-k8s/dev/principles/</loc>
          <lastmod>2025-08-13</lastmod>
     </url>
     <url>
-         <loc>https://sojohnnysaid.github.io/portable-k8s/0.1/repo-layout/</loc>
+         <loc>https://sojohnnysaid.github.io/portable-k8s/dev/repo-layout/</loc>
          <lastmod>2025-08-13</lastmod>
     </url>
     <url>
-         <loc>https://sojohnnysaid.github.io/portable-k8s/0.1/risks-roadmap/</loc>
+         <loc>https://sojohnnysaid.github.io/portable-k8s/dev/risks-roadmap/</loc>
          <lastmod>2025-08-13</lastmod>
     </url>
     <url>
-         <loc>https://sojohnnysaid.github.io/portable-k8s/0.1/security/</loc>
+         <loc>https://sojohnnysaid.github.io/portable-k8s/dev/security/</loc>
          <lastmod>2025-08-13</lastmod>
     </url>
     <url>
-         <loc>https://sojohnnysaid.github.io/portable-k8s/0.1/toolchain/</loc>
+         <loc>https://sojohnnysaid.github.io/portable-k8s/dev/toolchain/</loc>
          <lastmod>2025-08-13</lastmod>
     </url>
     <url>
-         <loc>https://sojohnnysaid.github.io/portable-k8s/0.1/cicd/app-pipeline/</loc>
+         <loc>https://sojohnnysaid.github.io/portable-k8s/dev/cicd/app-pipeline/</loc>
          <lastmod>2025-08-13</lastmod>
     </url>
     <url>
-         <loc>https://sojohnnysaid.github.io/portable-k8s/0.1/cicd/ephemeral-envs/</loc>
+         <loc>https://sojohnnysaid.github.io/portable-k8s/dev/cicd/ephemeral-envs/</loc>
          <lastmod>2025-08-13</lastmod>
     </url>
     <url>
-         <loc>https://sojohnnysaid.github.io/portable-k8s/0.1/cicd/platform-pipeline/</loc>
+         <loc>https://sojohnnysaid.github.io/portable-k8s/dev/cicd/platform-pipeline/</loc>
          <lastmod>2025-08-13</lastmod>
     </url>
     <url>
-         <loc>https://sojohnnysaid.github.io/portable-k8s/0.1/reference/architecture/</loc>
+         <loc>https://sojohnnysaid.github.io/portable-k8s/dev/reference/architecture/</loc>
          <lastmod>2025-08-13</lastmod>
     </url>
     <url>
-         <loc>https://sojohnnysaid.github.io/portable-k8s/0.1/reference/networking/</loc>
+         <loc>https://sojohnnysaid.github.io/portable-k8s/dev/reference/networking/</loc>
          <lastmod>2025-08-13</lastmod>
     </url>
     <url>
-         <loc>https://sojohnnysaid.github.io/portable-k8s/0.1/runbooks/backups-restore/</loc>
+         <loc>https://sojohnnysaid.github.io/portable-k8s/dev/runbooks/backups-restore/</loc>
          <lastmod>2025-08-13</lastmod>
     </url>
     <url>
-         <loc>https://sojohnnysaid.github.io/portable-k8s/0.1/runbooks/bootstrap/</loc>
+         <loc>https://sojohnnysaid.github.io/portable-k8s/dev/runbooks/bootstrap/</loc>
          <lastmod>2025-08-13</lastmod>
     </url>
     <url>
-         <loc>https://sojohnnysaid.github.io/portable-k8s/0.1/runbooks/disaster-recovery/</loc>
+         <loc>https://sojohnnysaid.github.io/portable-k8s/dev/runbooks/disaster-recovery/</loc>
          <lastmod>2025-08-13</lastmod>
     </url>
     <url>
-         <loc>https://sojohnnysaid.github.io/portable-k8s/0.1/runbooks/upgrades/</loc>
+         <loc>https://sojohnnysaid.github.io/portable-k8s/dev/runbooks/upgrades/</loc>
          <lastmod>2025-08-13</lastmod>
     </url>
 </urlset>
