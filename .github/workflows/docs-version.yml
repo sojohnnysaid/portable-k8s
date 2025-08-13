@@ -1,29 +1,26 @@
 name: "Docs (versioned) - on tag"
-
 on:
   push:
     tags:
       - "v*"
       - "*.*"
       - "*.*.*"
-
 permissions:
   contents: write
-
+concurrency:
+  group: docs
+  cancel-in-progress: false
 jobs:
   build-and-deploy-version:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-        with:
-          fetch-depth: 0
-      - run: |
-          # make sure we have the remote gh-pages branch locally
-          git fetch origin gh-pages --depth=1 || true
+        with: { fetch-depth: 0 }
+      - run: git fetch origin gh-pages --depth=1 || true
       - uses: actions/setup-python@v5
-        with:
-          python-version: "3.x"
-      - run: pip install mkdocs-material mike pymdown-extensions mkdocs-git-revision-date-localized-plugin mkdocs-minify-plugin
+        with: { python-version: "3.x" }
+      - run: |
+          pip install -r requirements.txt
       - name: "Deploy version and update latest alias"
         env:
           TAG: ${{ github.ref_name }}   # e.g. v0.2.4 or 0.2.4
@@ -32,10 +29,9 @@ jobs:
           git config user.name "github-actions[bot]"
           git config user.email "github-actions[bot]@users.noreply.github.com"
 
-          TAG="${TAG#v}"                           # strip optional v
-          IFS='.' read -r MAJOR MINOR PATCH <<< "$TAG"
-          VERSION_MINOR="${MAJOR}.${MINOR}"        # 0.2 from 0.2.4
+          TAG="${TAG#v}"                           # strip optional leading v
+          IFS='.' read -r MAJOR MINOR PATCH <<< "${TAG:-0.0.0}"
+          VERSION_MINOR="${MAJOR}.${MINOR}"        # 0.2 from 0.2.4, or 0.1 from 0.1
 
-          mike deploy --push --update-aliases --rebase "$VERSION_MINOR" latest
-          mike set-default --push --rebase latest
-
+          mike deploy --push --update-aliases --branch gh-pages "${VERSION_MINOR}" latest
+          mike set-default --push --branch gh-pages latest
