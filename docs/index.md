@@ -22,7 +22,7 @@ We've successfully set up a local Kubernetes development environment on macOS wi
 - **Kubernetes Cluster:** K3s running via Colima (6 CPU, 12GB RAM, 60GB disk)
 - **Container Runtime:** Docker via Colima
 - **GitOps:** ArgoCD installed and accessible
-- **CLI Tools:** kubectl, Helm, Tilt, Azure CLI
+- **CLI Tools:** kubectl, Tilt, Azure CLI, ArgoCD CLI
 
 [View Phase 1 Documentation](local-setup/phase1-environment-setup.md)
 
@@ -31,10 +31,11 @@ We've successfully set up a local Kubernetes development environment on macOS wi
 We've established a complete GitOps workflow with:
 
 - **GitOps Repository:** Structured repository at `github.com/sojohnnysaid/k8s`
-- **Monitoring Stack:** Prometheus & Grafana deployed via ArgoCD
-- **Secrets Management:** SOPS encryption with Age keys configured
+- **Monitoring Stack:** Prometheus & Grafana deployed using raw Kubernetes manifests
+- **Elastic Stack:** Complete ELK (Elasticsearch, Logstash, Kibana) + Filebeat for log aggregation
 - **Auto-sync:** ArgoCD automatically deploying from Git
-- **Repository Access:** SSH and HTTPS configured with TLS bypass for corporate networks
+- **Repository Access:** SSH keys configured for secure access
+- **Manifest-based Deployment:** Moved away from Helm charts to raw Kubernetes manifests for better control
 
 [View Phase 2 Documentation](local-setup/phase2-gitops-setup.md)
 
@@ -54,7 +55,7 @@ This playbook implements a modern cloud-native architecture featuring:
 - **Platform:** Kubernetes (K3s locally, AKS in Azure)
 - **GitOps:** ArgoCD for continuous deployment
 - **CI/CD:** GitHub Actions for builds and testing
-- **Observability:** Prometheus, Grafana, EFK stack
+- **Observability:** Prometheus, Grafana, Elastic Stack (ELK + Filebeat)
 - **Security:** SOPS for secrets, Pod Security Standards
 - **Backups:** Velero for cluster state backup
 
@@ -74,7 +75,7 @@ With Phases 1 & 2 complete, the upcoming phases include:
 
 - **Phase 3:** CI/CD Pipeline with GitHub Actions
 - **Phase 4:** Azure AKS Provisioning and Production Setup
-- **Phase 5:** Full Observability Stack (EFK Logging)
+- **Phase 5:** ✅ Full Observability Stack (Elastic Stack Logging) - COMPLETE
 - **Phase 6:** Advanced Secrets Management
 - **Phase 7:** Velero Backup Configuration
 - **Phase 8:** Security Policy Enforcement
@@ -85,4 +86,4 @@ This is a living document that evolves with best practices and new tools. Contri
 
 ---
 
-*Last Updated: Phase 2 Completion - GitOps and Monitoring Stack Deployed*
+*Last Updated: Phase 2 Complete - Full Observability Stack with Monitoring and Logging*

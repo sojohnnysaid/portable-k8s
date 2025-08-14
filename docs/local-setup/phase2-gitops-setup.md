@@ -34,72 +34,54 @@ cd k8s
 
 ### Step 2: Create Directory Structure
 
-Organize the repository for multi-environment support.
+Organize the repository for your Kubernetes manifests.
 
 **Create Directories:**
 ```bash
-# Create environment directories
-mkdir -p environments/dev
-mkdir -p environments/prod
+# Create directory for ArgoCD application definitions and manifests
+mkdir -p argocd-apps/monitoring-manifests
+mkdir -p argocd-apps/elastic-manifests
 
-# Create base configurations
-mkdir -p base/app
-mkdir -p base/infrastructure  
-
-# Create Helm values directory
-mkdir -p helm-values
+# Create archive for old test applications (optional)
+mkdir -p archive/test-apps
 ```
 
-**Actual Structure:**
+**Repository Structure:**
 ```
 .
 ├── README.md
-├── base
-│   ├── app
-│   └── infrastructure
-├── environments
-│   ├── dev
-│   └── prod
-├── helm-values
-├── local-notes.md
-└── prompt.md
-
-8 directories, 3 files
+├── argocd-apps/
+│   ├── monitoring-manifests/    # Prometheus & Grafana manifests
+│   ├── elastic-manifests/       # Elastic Stack manifests
+│   ├── monitoring.yaml          # ArgoCD app definition
+│   └── elasticsearch-only.yaml  # ArgoCD app definition
+└── archive/                     # Archived test applications
 ```
 
 **Status:** ✅ Complete
 
 ---
 
-### Step 3: Document Directory Structure
+### Step 3: Create Main README
 
-Add README files to document the purpose of each directory.
+Document your repository structure and approach.
 
-**base/README.md:**
+**README.md:**
 ```markdown
-# Base Configurations
+# K8s GitOps Repository
 
-This directory contains base Kubernetes manifests and Helm charts that are shared across environments.
+This repository contains raw Kubernetes manifests for our infrastructure, deployed via ArgoCD.
 
-- **app/**: Application manifests
-- **infrastructure/**: Infrastructure components (monitoring, logging, ingress, etc.)
-```
+## Architecture Principles
+- **No Helm**: All applications use raw Kubernetes manifests for full control
+- **GitOps**: ArgoCD syncs from this repository automatically
+- **Simplicity**: Direct manifests are easier to understand and debug
 
-**environments/README.md:**
-```markdown
-# Environment-Specific Configurations
-
-Environment-specific overlays and configurations.
-
-- **dev/**: Local development environment (K3s on Colima)
-- **prod/**: Production environment (Azure AKS)
-```
-
-**helm-values/README.md:**
-```markdown
-# Helm Values
-
-Environment-specific Helm values files for charts.
+## Directory Structure
+- `argocd-apps/` - ArgoCD application definitions and manifests
+  - `monitoring-manifests/` - Prometheus and Grafana
+  - `elastic-manifests/` - Elasticsearch, Kibana, Logstash, Filebeat
+- `archive/` - Old test applications (not deployed)
 ```
 
 **Status:** ✅ Complete
@@ -110,370 +92,123 @@ Environment-specific Helm values files for charts.
 
 ### Step 4: Add Prometheus & Grafana Stack
 
-Configure the kube-prometheus-stack for monitoring.
-
-**Helm Repository Added:**
-```
-prometheus-community    https://prometheus-community.github.io/helm-charts
-```
-
-**File Created: `base/infrastructure/monitoring/kustomization.yaml`**
-```yaml
-apiVersion: kustomize.config.k8s.io/v1beta1
-kind: Kustomization
-namespace: monitoring
-
-helmCharts:
-  - name: kube-prometheus-stack
-    repo: https://prometheus-community.github.io/helm-charts
-    version: 65.1.1
-    releaseName: monitoring
-    namespace: monitoring
-    valuesFile: values.yaml
-```
-
-**Status:** ✅ Complete
-
----
-
-### Step 5: Create Monitoring Values File
-
-Configure Prometheus and Grafana settings.
-
-**File Created: `base/infrastructure/monitoring/values.yaml`**
-```yaml
-# Grafana configuration
-grafana:
-  enabled: true
-  adminPassword: admin  # Change this in production!
-  service:
-    type: ClusterIP
-  ingress:
-    enabled: false
-
-# Prometheus configuration
-prometheus:
-  prometheusSpec:
-    retention: 7d
-    storageSpec:
-      volumeClaimTemplate:
-        spec:
-          accessModes: ["ReadWriteOnce"]
-          resources:
-            requests:
-              storage: 10Gi
-
-# AlertManager configuration
-alertmanager:
-  alertmanagerSpec:
-    storage:
-      volumeClaimTemplate:
-        spec:
-          accessModes: ["ReadWriteOnce"]
-          resources:
-            requests:
-              storage: 2Gi
-
-# Disable components we don't need in dev
-kubeEtcd:
-  enabled: false
-kubeControllerManager:
-  enabled: false
-kubeScheduler:
-  enabled: false
-```
-
-**Status:** ✅ Complete
-
----
-
-### Step 6: Add EFK Logging Stack
-
-Configure Elasticsearch, Fluent Bit, and Kibana for logging.
-
-**File Created: `base/infrastructure/logging/kustomization.yaml`**
-```yaml
-apiVersion: kustomize.config.k8s.io/v1beta1
-kind: Kustomization
-
-namespace: logging
-
-helmCharts:
-- name: elasticsearch
-  repo: https://helm.elastic.co
-  version: 8.5.1
-  releaseName: elasticsearch
-  namespace: logging
-  valuesFile: elasticsearch-values.yaml
-
-- name: kibana
-  repo: https://helm.elastic.co
-  version: 8.5.1
-  releaseName: kibana
-  namespace: logging
-  valuesFile: kibana-values.yaml
-
-- name: fluent-bit
-  repo: https://fluent.github.io/helm-charts
-  version: 0.24.0
-  releaseName: fluent-bit
-  namespace: logging
-  valuesFile: fluent-bit-values.yaml
-```
-
-**Helm Repositories Added:**
-```
-elastic                 https://helm.elastic.co
-fluent                  https://fluent.github.io/helm-charts
-```
-
-**Status:** ✅ Complete
-
----
-
-### Step 7: Create EFK Values Files
-
-Create values files for Elasticsearch, Kibana, and Fluent Bit.
-
-**Files Created:**
-- `base/infrastructure/logging/elasticsearch-values.yaml` - Single-node ES config for dev
-- `base/infrastructure/logging/kibana-values.yaml` - Kibana pointing to ES master
-- `base/infrastructure/logging/fluent-bit-values.yaml` - Log collection from all containers
+Configure monitoring using raw Kubernetes manifests (moved away from Helm for better control).
 
 **Directory Structure:**
 ```
-base/infrastructure/logging/
-├── elasticsearch-values.yaml
-├── fluent-bit-values.yaml
-├── kibana-values.yaml
-└── kustomization.yaml
+argocd-apps/monitoring-manifests/
+├── namespace.yaml
+├── prometheus.yaml  
+├── grafana.yaml
 ```
+
+**Prometheus Configuration:** Raw manifests with:
+- ServiceAccount and RBAC for cluster monitoring
+- ConfigMap with scraping configuration
+- Deployment with resource limits optimized for local development
+- Service for internal access
+
+**Grafana Configuration:** Raw manifests with:
+- ConfigMap for Prometheus datasource
+- Deployment with anonymous admin access for dev
+- Service exposing port 3000
 
 **Status:** ✅ Complete
 
 ---
 
-## Environment-Specific Configurations
+### Step 5: Add Elastic Stack (ELK + Filebeat)
 
-### Step 8: Set Up Kustomize Overlays for Dev Environment
+Configure complete logging solution using raw Kubernetes manifests.
 
-Create environment-specific overlays for the dev environment.
-
-**File Created: `environments/dev/kustomization.yaml`**
-```yaml
-apiVersion: kustomize.config.k8s.io/v1beta1
-kind: Kustomization
-
-# Reference base configurations
-resources:
-  - ../../base/infrastructure/monitoring
-  - ../../base/infrastructure/logging
-
-# Dev-specific namespace
-namespace: dev
-
-# Patches for dev environment
-patches:
-  - target:
-      kind: HelmChart
-      name: kube-prometheus-stack
-    patch: |-
-      - op: replace
-        path: /spec/valuesFile
-        value: ../../helm-values/dev/monitoring-values.yaml
-
-  - target:
-      kind: HelmChart
-      name: elasticsearch
-    patch: |-
-      - op: replace
-        path: /spec/valuesFile
-        value: ../../helm-values/dev/elasticsearch-values.yaml
-
-# Common labels for all resources
-commonLabels:
-  environment: dev
-  managed-by: argocd
+**Directory Structure:**
+```
+argocd-apps/elastic-manifests/
+├── namespace.yaml
+├── elasticsearch.yaml
+├── kibana.yaml
+├── logstash.yaml
+└── filebeat.yaml
 ```
 
-**File Created: `helm-values/dev/monitoring-values.yaml`**
-- Dev-specific overrides for monitoring stack
-- Reduced retention and storage
-- AlertManager disabled for dev
+**Elasticsearch Configuration:**
+- Single-node setup with `discovery.type: single-node`
+- 2GB memory, ephemeral storage for local dev
+- Security disabled for simplicity
+- Service exposing port 9200
+
+**Kibana Configuration:**
+- Connected to Elasticsearch service
+- Web UI on port 5601
+- Auto-configured for Elasticsearch connection
+
+**Logstash Configuration:**
+- Beats input on port 5044
+- Processing pipeline for Kubernetes metadata
+- Output to Elasticsearch with daily indices
+
+**Filebeat Configuration:**
+- DaemonSet collecting logs from all containers
+- Kubernetes metadata enrichment
+- Ships to Logstash for processing
+- RBAC configured for pod/node access
 
 **Status:** ✅ Complete
 
 ---
 
-### Step 9: Set Up Prod Environment Overlay
+### Step 6: Repository Configuration for SSH Access
 
-Create production environment configuration with enhanced settings.
+Configure ArgoCD to access the GitOps repository via SSH.
 
-**File Created: `environments/prod/kustomization.yaml`**
-- References base infrastructure components
-- Uses production namespace
-- Patches to use prod-specific values
-
-**File Created: `helm-values/prod/monitoring-values.yaml`**
-- Longer retention periods (30d)
-- Larger storage allocations
-- Persistence enabled
-- AlertManager enabled
-
-**Status:** ✅ Complete
-
----
-
-## Secrets Management
-
-### Step 10: Set Up SOPS for Secrets Encryption
-
-Configure SOPS (Secrets OPerationS) with Age encryption for secure secret management in GitOps.
-
-**Why SOPS is Needed:**
-GitOps requires all configurations to be stored in Git, but we cannot store secrets in plain text. SOPS allows us to:
-- Encrypt sensitive data before committing to Git
-- Decrypt automatically during deployment via ArgoCD
-- Maintain GitOps principles while keeping secrets secure
-- Track secret changes in version control without exposing values
-
-**Tools Installed:**
-- `sops` - Encryption/decryption tool
-- `age` - Modern encryption tool (simpler than GPG)
-
-**Age Key Generated:**
-```
-age-keygen -o ~/.sops/age/keys.txt
-# Public key: age1******* (your public key will appear here)
-# Private key: Stored securely in ~/.sops/age/keys.txt
-```
-
-**Files Created:**
-- `.sops.yaml` - Configuration for automatic encryption rules
-- `base/infrastructure/secrets/grafana-secret.yaml` - Sample encrypted secret
-
-**Encryption Process:**
+**SSH Key Setup:**
 ```bash
-# Encrypts the file in place, replacing plain text with encrypted values
-sops -e -i path/to/secret.yaml
+# ArgoCD SSH keys should be in ~/.ssh/
+ls ~/.ssh/argocd*
+# argocd-github (private key)
+# argocd-github.pub (public key added to GitHub deploy keys)
 ```
 
-**File Created: `.sops.yaml`**
-```yaml
-creation_rules:
-  - path_regex: .*secret.*\.yaml$
-    encrypted_regex: ^(data|stringData)$
-    age: >-
-      age1******* # Your public key from age-keygen
-```
-
-**Sample Secret Created: `base/infrastructure/secrets/grafana-secret.yaml`** (before encryption)
-```yaml
-apiVersion: v1
-kind: Secret
-metadata:
-  name: grafana-admin
-  namespace: monitoring
-type: Opaque
-stringData:
-  admin-password: supersecretpassword
-  admin-user: admin
-```
-
-**Encrypt the secret:**
+**Create Repository Secret:**
 ```bash
-mkdir -p base/infrastructure/secrets
-sops -e -i base/infrastructure/secrets/grafana-secret.yaml
-```
-
-**Status:** ✅ Complete
-
----
-
-### Step 11: Configure KSOPS in ArgoCD
-
-Enable ArgoCD to decrypt SOPS-encrypted secrets using KSOPS plugin.
-
-**Create ArgoCD infrastructure directory:**
-```bash
-mkdir -p base/infrastructure/argocd
-```
-
-**File Created: `base/infrastructure/argocd/repo-server-ksops-patch.yaml`**
-```yaml
-apiVersion: apps/v1
-kind: Deployment
-metadata:
-  name: argocd-repo-server
-  namespace: argocd
-spec:
-  template:
-    spec:
-      volumes:
-      - name: custom-tools
-        emptyDir: {}
-      - name: sops-age
-        secret:
-          secretName: sops-age
-      initContainers:
-      - name: install-ksops
-        image: viaductoss/ksops:v4.2.1
-        command: ["/bin/sh", "-c"]
-        args:
-        - echo "Installing KSOPS...";
-          mv /usr/local/bin/ksops /custom-tools/;
-          mv /usr/local/bin/kustomize /custom-tools/;
-          echo "Done.";
-        volumeMounts:
-        - mountPath: /custom-tools
-          name: custom-tools
-      containers:
-      - name: argocd-repo-server
-        volumeMounts:
-        - mountPath: /usr/local/bin/kustomize
-          name: custom-tools
-          subPath: kustomize
-        - mountPath: /usr/local/bin/ksops
-          name: custom-tools
-          subPath: ksops
-        - mountPath: /home/argocd/.config/sops/age
-          name: sops-age
-        env:
-        - name: SOPS_AGE_KEY_FILE
-          value: /home/argocd/.config/sops/age/keys.txt
-        - name: XDG_CONFIG_HOME
-          value: /home/argocd/.config
-```
-
-**File Created: `base/infrastructure/argocd/kustomization.yaml`**
-```yaml
-apiVersion: kustomize.config.k8s.io/v1beta1
-kind: Kustomization
-
-namespace: argocd
-
-patches:
-  - path: repo-server-ksops-patch.yaml
-```
-
-**Create Age Secret:**
-```bash
-kubectl create secret generic sops-age \
+kubectl create secret generic github-k8s-repo \
   --namespace=argocd \
-  --from-file=keys.txt=$HOME/.sops/age/keys.txt
+  --from-literal=type=git \
+  --from-literal=url=git@github.com:sojohnnysaid/k8s.git \
+  --from-file=sshPrivateKey=$HOME/.ssh/argocd-github
+
+kubectl label secret github-k8s-repo -n argocd \
+  argocd.argoproj.io/secret-type=repository
 ```
 
-**Apply Patch:**
-```bash
-kubectl patch deployment argocd-repo-server -n argocd \
-  --patch-file base/infrastructure/argocd/repo-server-ksops-patch.yaml
+**Status:** ✅ Complete
+
+---
+
+### Step 7: Create Application Manifests
+
+Create raw Kubernetes manifests for each component.
+
+**Files to Create:**
+```
+argocd-apps/
+├── monitoring-manifests/
+│   ├── namespace.yaml       # Creates monitoring namespace
+│   ├── prometheus.yaml      # Prometheus deployment, service, RBAC
+│   └── grafana.yaml         # Grafana deployment, service, configmaps
+└── elastic-manifests/
+    ├── namespace.yaml       # Creates elastic-stack namespace
+    ├── elasticsearch.yaml   # Single-node ES StatefulSet
+    ├── kibana.yaml          # Kibana deployment and service
+    ├── logstash.yaml        # Logstash deployment for processing
+    └── filebeat.yaml        # DaemonSet for log collection
 ```
 
-**Verification:**
-```bash
-kubectl rollout status deployment/argocd-repo-server -n argocd
-kubectl get pods -n argocd | grep repo-server
-```
+**Key Configuration Choices:**
+- Raw Kubernetes manifests for full control
+- Minimal resource requirements for local development
+- Ephemeral storage (no persistent volumes)
+- Security disabled for simplicity in dev
 
 **Status:** ✅ Complete
 
@@ -481,38 +216,31 @@ kubectl get pods -n argocd | grep repo-server
 
 ## ArgoCD Repository Configuration
 
-### Step 12: Configure Repository Access
+### Step 8: Configure Repository Access
 
-Configure ArgoCD to access your GitOps repository with proper authentication.
+Configure ArgoCD to access your GitOps repository via SSH.
 
-**Configure HTTPS with TLS bypass (for corporate networks with SSL interception):**
+**Create SSH Keys for ArgoCD:**
 ```bash
-kubectl edit configmap argocd-cm -n argocd
+# Generate SSH key pair if not already done
+ssh-keygen -t ed25519 -f ~/.ssh/argocd-github -C "argocd-local"
+
+# Add public key to GitHub repository as Deploy Key with read-only access
+cat ~/.ssh/argocd-github.pub
+# Copy and add to: GitHub Repo Settings > Deploy keys > Add deploy key
 ```
 
-**Add to the ConfigMap:**
-```yaml
-data:
-  repositories: |
-    - url: https://github.com
-      insecure: true
-  repository.credentials: |
-    - url: https://github.com
-      insecureIgnoreHostKey: true
-      insecureSkipServerVerification: true
-```
-
-**Alternative: Create repository secret with SSH:**
+**Create Repository Secret:**
 ```bash
-# Create SSH secret
-kubectl create secret generic k8s-repo-ssh \
+# Create secret with SSH private key
+kubectl create secret generic github-k8s-repo \
   --namespace=argocd \
-  --from-file=sshPrivateKey=$HOME/.ssh/id_ed25519 \
   --from-literal=type=git \
-  --from-literal=url=git@github.com:sojohnnysaid/k8s.git
+  --from-literal=url=git@github.com:sojohnnysaid/k8s.git \
+  --from-file=sshPrivateKey=$HOME/.ssh/argocd-github
 
-# Label the secret
-kubectl label secret k8s-repo-ssh -n argocd \
+# Label as repository secret
+kubectl label secret github-k8s-repo -n argocd \
   argocd.argoproj.io/secret-type=repository
 ```
 
@@ -524,7 +252,7 @@ kubectl get secrets -n argocd -l argocd.argoproj.io/secret-type=repository
 **Expected Output:**
 ```
 NAME              TYPE     DATA   AGE
-k8s-repo-ssh      Opaque   3      XXm
+github-k8s-repo   Opaque   3      XXm
 ```
 
 **Status:** ✅ Complete
@@ -533,90 +261,52 @@ k8s-repo-ssh      Opaque   3      XXm
 
 ## Deploying Monitoring Stack
 
-### Step 13: Clean Repository Structure
+### Step 9: Prepare Repository
 
-Organize the repository for clean application deployment.
+Ensure your repository is clean and organized.
 
-**Create directory structure:**
+**Clean up any test applications:**
 ```bash
 cd /path/to/your/k8s-repo
 
-# Create ArgoCD applications directory
-mkdir -p argocd-apps
-
-# Archive any test applications
+# Archive any test applications if they exist
 mkdir -p archive/test-apps
 mv argocd-apps/test* archive/test-apps/ 2>/dev/null || true
 ```
 
-**Repository structure:**
+**Final repository structure:**
 ```
 k8s/
-├── argocd-apps/           # ArgoCD application definitions
-├── base/                  # Base configurations
-│   └── infrastructure/    # Infrastructure components
-├── environments/          # Environment-specific configs
-│   ├── dev/
-│   └── prod/
-└── helm-values/          # Helm value overrides
+├── argocd-apps/
+│   ├── monitoring-manifests/     # Raw K8s manifests
+│   ├── elastic-manifests/        # Raw K8s manifests
+│   ├── monitoring.yaml           # ArgoCD app definition
+│   └── elasticsearch-only.yaml   # ArgoCD app definition
+├── archive/                      # Not deployed
+└── README.md
 ```
 
 **Status:** ✅ Complete
 
 ---
 
-### Step 14: Create Monitoring Application
+### Step 10: Create ArgoCD Applications
 
-Define the monitoring stack application for ArgoCD.
+Define applications for both monitoring and logging stacks using Git repository.
 
-**Create application manifest:**
-```bash
-cat > argocd-apps/monitoring-dev.yaml << 'EOF'
+**Monitoring Application (`argocd-apps/monitoring.yaml`):**
+```yaml
 apiVersion: argoproj.io/v1alpha1
 kind: Application
 metadata:
-  name: monitoring-dev
+  name: monitoring
   namespace: argocd
-  finalizers:
-    - resources-finalizer.argocd.argoproj.io
 spec:
   project: default
   source:
-    repoURL: https://prometheus-community.github.io/helm-charts
-    chart: kube-prometheus-stack
-    targetRevision: 65.1.1
-    helm:
-      releaseName: monitoring
-      values: |
-        # Grafana configuration
-        grafana:
-          adminPassword: admin  # Change in production!
-          persistence:
-            enabled: false  # No persistence for local dev
-          service:
-            type: ClusterIP
-
-        # Prometheus configuration
-        prometheus:
-          prometheusSpec:
-            retention: 1d  # Short retention for local dev
-            storageSpec:
-              volumeClaimTemplate:
-                spec:
-                  accessModes: ["ReadWriteOnce"]
-                  resources:
-                    requests:
-                      storage: 5Gi
-
-        # Disable unnecessary components for local dev
-        alertmanager:
-          enabled: false
-        kubeEtcd:
-          enabled: false
-        kubeControllerManager:
-          enabled: false
-        kubeScheduler:
-          enabled: false
+    repoURL: git@github.com:sojohnnysaid/k8s.git
+    path: argocd-apps/monitoring-manifests
+    targetRevision: main
   destination:
     server: https://kubernetes.default.svc
     namespace: monitoring
@@ -626,86 +316,101 @@ spec:
       selfHeal: true
     syncOptions:
       - CreateNamespace=true
-      - ServerSideApply=true  # Important for CRD size issues
-EOF
 ```
 
-**Note:** The `ServerSideApply=true` option is crucial for handling Prometheus CRDs that have large annotations.
+**Elastic Stack Application (`argocd-apps/elasticsearch-only.yaml`):**
+```yaml
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: elasticsearch
+  namespace: argocd
+spec:
+  project: default
+  source:
+    repoURL: git@github.com:sojohnnysaid/k8s.git
+    path: argocd-apps/elastic-manifests
+    targetRevision: main
+  destination:
+    server: https://kubernetes.default.svc
+    namespace: elastic-stack
+  syncPolicy:
+    automated:
+      prune: true
+      selfHeal: true
+    syncOptions:
+      - CreateNamespace=true
+```
+
+**Note:** Both applications pull raw Kubernetes manifests directly from your Git repository.
 
 **Status:** ✅ Complete
 
 ---
 
-### Step 15: Deploy Monitoring Application
+### Step 11: Deploy Applications
 
-Apply the monitoring application to ArgoCD.
+Apply both monitoring and Elastic Stack applications to ArgoCD.
 
-**Deploy the application:**
+**Deploy the applications:**
 ```bash
-kubectl apply -f argocd-apps/monitoring-dev.yaml
+kubectl apply -f argocd-apps/monitoring.yaml
+kubectl apply -f argocd-apps/elasticsearch-only.yaml
 ```
 
 **Monitor deployment status:**
 ```bash
 # Check application status
-kubectl get application monitoring-dev -n argocd -w
+kubectl get applications -n argocd
 
-# Expected progression:
-# NAME             SYNC STATUS   HEALTH STATUS
-# monitoring-dev   OutOfSync     Missing
-# monitoring-dev   Synced        Progressing
-# monitoring-dev   Synced        Healthy
+# Expected output:
+# NAME            SYNC STATUS   HEALTH STATUS
+# monitoring      Synced        Healthy
+# elasticsearch   Synced        Healthy
 ```
 
 **Verify pods are running:**
 ```bash
+# Monitoring stack
 kubectl get pods -n monitoring
-```
+# Expected: prometheus and grafana pods
 
-**Expected Output:**
-```
-NAME                                                   READY   STATUS    RESTARTS
-monitoring-grafana-xxx                                 3/3     Running   0
-monitoring-kube-prometheus-operator-xxx                1/1     Running   0
-monitoring-kube-state-metrics-xxx                      1/1     Running   0
-monitoring-prometheus-node-exporter-xxx                1/1     Running   0
-prometheus-monitoring-kube-prometheus-prometheus-0     2/2     Running   0
+# Elastic stack
+kubectl get pods -n elastic-stack
+# Expected: elasticsearch, kibana, logstash, and filebeat pods
 ```
 
 **Status:** ✅ Complete
 
 ---
 
-### Step 16: Access Grafana Dashboard
+### Step 12: Access Dashboards
 
-Set up access to the Grafana web interface.
+Set up access to both Grafana and Kibana web interfaces.
 
-**Port-forward Grafana:**
+**Grafana (Metrics):**
 ```bash
-kubectl port-forward -n monitoring svc/monitoring-grafana 3000:80
+kubectl port-forward -n monitoring svc/grafana 3000:3000
 ```
-
-**Get admin password:**
-```bash
-kubectl get secret monitoring-grafana -n monitoring \
-  -o jsonpath="{.data.admin-password}" | base64 -d && echo
-```
-
-**Access Grafana:**
 - URL: http://localhost:3000
 - Username: `admin`
-- Password: (from command above, default is `admin`)
+- Password: `admin`
+- Pre-configured with Prometheus datasource
 
-**Verify dashboards:**
-1. Navigate to Dashboards → Browse
-2. You should see pre-configured Kubernetes dashboards
-3. Check "Kubernetes / API server" for cluster metrics
+**Kibana (Logs):**
+```bash
+kubectl port-forward -n elastic-stack svc/kibana 5601:5601
+```
+- URL: http://localhost:5601
+- No authentication required (security disabled for dev)
+- Create index pattern `logstash-*` to view logs
+- All container logs are automatically collected
 
 **Status:** ✅ Complete
 
 ---
 
-### Step 17: Verify GitOps Sync
+### Step 13: Verify GitOps Sync
 
 Confirm ArgoCD is managing the deployment via GitOps.
 
@@ -733,33 +438,29 @@ kubectl -n argocd get secret argocd-initial-admin-secret \
 
 ---
 
-### Step 18: Commit Changes to Git
+### Step 14: Commit Changes to Git
 
 Save your configuration to the GitOps repository.
 
 **Commit and push:**
 ```bash
-# Add monitoring application
-git add argocd-apps/monitoring-dev.yaml
-
-# Add gitignore for archive
-echo "archive/" >> .gitignore
-git add .gitignore
+# Add application manifests
+git add argocd-apps/
 
 # Commit
-git commit -m "feat: add monitoring stack deployment
+git commit -m "feat: add observability stacks using raw manifests
 
-- kube-prometheus-stack v65.1.1 via Helm
-- Dev-optimized configuration
-- ServerSideApply for CRD handling
-- Auto-sync enabled"
+- Monitoring: Prometheus and Grafana
+- Logging: Complete Elastic Stack (ELK + Filebeat)
+- Raw Kubernetes manifests only
+- Auto-sync enabled for GitOps"
 
 # Push to GitHub
 git push origin main
 ```
 
 **Verify GitOps:**
-After pushing, ArgoCD should detect no changes needed (already in sync).
+After pushing, ArgoCD automatically syncs and deploys any changes.
 
 **Status:** ✅ Complete
 
@@ -773,23 +474,25 @@ You have successfully:
 
 | Component | Status | Details |
 |-----------|--------|---------|
-| **GitOps Repository** | ✅ | Created and structured at `github.com/sojohnnysaid/k8s` |
-| **Directory Structure** | ✅ | Organized with `argocd-apps/`, `base/`, `environments/`, `helm-values/` |
-| **SOPS Encryption** | ✅ | Age encryption configured for secrets management |
-| **KSOPS Integration** | ✅ | ArgoCD configured to decrypt SOPS secrets |
-| **Repository Access** | ✅ | SSH and HTTPS with TLS bypass configured |
-| **Monitoring Stack** | ✅ | kube-prometheus-stack v65.1.1 deployed |
-| **Grafana** | ✅ | Accessible with pre-configured dashboards |
+| **GitOps Repository** | ✅ | Created at `github.com/sojohnnysaid/k8s` |
+| **Repository Structure** | ✅ | Simple structure with `argocd-apps/` containing all manifests |
+| **SSH Access** | ✅ | Deploy keys configured for ArgoCD |
+| **Monitoring Stack** | ✅ | Prometheus & Grafana using raw Kubernetes manifests |
+| **Elastic Stack** | ✅ | Complete ELK + Filebeat for log aggregation |
 | **GitOps Sync** | ✅ | ArgoCD auto-syncing from Git repository |
+| **Architecture** | ✅ | 100% raw Kubernetes manifests, no templating |
 
 ### Running Services
 
-**Monitoring Stack Components:**
-- **Prometheus**: Collecting and storing metrics (5GB storage, 1 day retention)
-- **Grafana**: Visualization with Kubernetes dashboards (port 3000)
-- **Node Exporter**: Host metrics collection
-- **Kube State Metrics**: Kubernetes object metrics
-- **Prometheus Operator**: Managing Prometheus configuration
+**Monitoring Stack (Metrics):**
+- **Prometheus**: Collecting and storing metrics with minimal resources
+- **Grafana**: Visualization with Prometheus datasource (port 3000)
+
+**Elastic Stack (Logs):**
+- **Elasticsearch**: Log storage and indexing (single-node, ephemeral)
+- **Kibana**: Log visualization and search UI (port 5601)  
+- **Logstash**: Log processing and enrichment pipeline
+- **Filebeat**: DaemonSet collecting logs from all containers
 
 ### Access Information
 
@@ -803,10 +506,18 @@ kubectl port-forward svc/argocd-server -n argocd 8080:443
 
 **Grafana UI:**
 ```bash
-kubectl port-forward -n monitoring svc/monitoring-grafana 3000:80
+kubectl port-forward -n monitoring svc/grafana 3000:3000
 # URL: http://localhost:3000
 # Username: admin
 # Password: admin
+```
+
+**Kibana UI:**
+```bash
+kubectl port-forward -n elastic-stack svc/kibana 5601:5601
+# URL: http://localhost:5601
+# No authentication (security disabled for dev)
+# Create index pattern: logstash-*
 ```
 
 ### Key Configurations
@@ -815,37 +526,50 @@ kubectl port-forward -n monitoring svc/monitoring-grafana 3000:80
 ```
 k8s/
 ├── argocd-apps/
-│   └── monitoring-dev.yaml    # Monitoring application definition
-├── base/                      # Base configurations (for Kustomize approach)
-├── environments/              # Environment-specific overlays
-│   ├── dev/
-│   └── prod/
-├── helm-values/              # Helm value overrides
-└── archive/                  # Archived test applications
+│   ├── monitoring.yaml                    # ArgoCD app for monitoring stack
+│   ├── elasticsearch-only.yaml            # ArgoCD app for Elastic stack
+│   ├── monitoring-manifests/              # Raw K8s manifests
+│   │   ├── namespace.yaml
+│   │   ├── prometheus.yaml
+│   │   └── grafana.yaml
+│   └── elastic-manifests/                 # Raw K8s manifests
+│       ├── namespace.yaml
+│       ├── elasticsearch.yaml
+│       ├── kibana.yaml
+│       ├── logstash.yaml
+│       └── filebeat.yaml
+└── README.md
 ```
 
 **Important Settings:**
-- **ServerSideApply**: Enabled to handle large CRD annotations
+- **Manifest-based**: All deployments use raw Kubernetes manifests
 - **Auto-sync**: Enabled for automatic deployment from Git
-- **TLS Verification**: Bypassed for corporate network compatibility
-- **Resource Limits**: Optimized for local development (1 day retention, no AlertManager)
+- **SSH Authentication**: Repository access via SSH deploy keys
+- **Resource Limits**: Optimized for local development
+- **Ephemeral Storage**: No persistent volumes for simplicity
+- **Security Disabled**: Elasticsearch/Kibana security off for dev
 
 ### Next Steps
 
-With Phase 2 complete, you're ready to:
-- **Phase 3**: Set up CI/CD pipeline with GitHub Actions
-- **Phase 4**: Configure Azure AKS for production
-- **Phase 5**: Deploy full observability stack (EFK logging)
-- **Phase 6**: Implement advanced secrets management
-- **Phase 7**: Configure Velero for backups
-- **Phase 8**: Apply security policies
+With Phase 2 complete, you have a fully functional local development environment with:
+- ✅ Complete monitoring stack (Prometheus & Grafana)
+- ✅ Complete logging stack (Elastic Stack with ELK + Filebeat)
+- ✅ GitOps workflow with ArgoCD
+- ✅ All using raw Kubernetes manifests
+
+Future phases could include:
+- **Phase 3**: CI/CD pipeline with GitHub Actions
+- **Phase 4**: Azure AKS for production deployment
+- **Phase 5**: Advanced secrets management
+- **Phase 6**: Velero for backup and disaster recovery
+- **Phase 7**: Security policies and hardening
 
 ### Troubleshooting Commands
 
 **Check application sync status:**
 ```bash
 kubectl get applications -n argocd
-argocd app get monitoring-dev
+argocd app get monitoring
 ```
 
 **View ArgoCD logs:**
@@ -864,7 +588,7 @@ kubectl describe pod <pod-name> -n monitoring
 ```bash
 # Make a change in the repository
 # ArgoCD should detect and sync within 3 minutes
-argocd app sync monitoring-dev
+argocd app sync monitoring
 ```
 
 ---

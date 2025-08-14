@@ -102,30 +102,8 @@ Kustomize Version: vx.x.x
 
 ---
 
-### Step 5: Install Helm
 
-Helm is the package manager for Kubernetes, used for deploying and managing applications.
-
-**Installation:**
-```bash
-brew install helm
-```
-
-**Verify Installation:**
-```bash
-helm version
-```
-
-**Expected Output:**
-```
-version.BuildInfo{Version:"v3.x.x", GitCommit:"...", GitTreeState:"clean", GoVersion:"..."}
-```
-
-**Status:** ✅ Installed (Version 3.18.4)
-
----
-
-### Step 6: Install Tilt
+### Step 5: Install Tilt
 
 Tilt enables fast local Kubernetes development with automatic rebuilds and live updates.
 
@@ -148,7 +126,7 @@ v0.x.x, built yyyy-mm-dd
 
 ---
 
-### Step 7: Install ArgoCD CLI
+### Step 6: Install ArgoCD CLI
 
 ArgoCD CLI for managing GitOps deployments from the command line.
 
@@ -174,7 +152,7 @@ argocd: vx.x.x+xxxxxxx
 
 ---
 
-### Step 8: Install Azure CLI
+### Step 7: Install Azure CLI
 
 Azure CLI for managing Azure resources and AKS clusters (needed for later phases).
 
@@ -202,7 +180,7 @@ telemetry                          x.x.x
 
 ## Starting the Local Kubernetes Cluster
 
-### Step 9: Start Colima with Kubernetes
+### Step 8: Start Colima with Kubernetes
 
 Start Colima with K3s Kubernetes and Docker runtime.
 
@@ -238,7 +216,7 @@ colima   Ready    control-plane,master   Xm    vX.XX.X+k3s1
 
 ## Installing ArgoCD
 
-### Step 10: Install ArgoCD on the Cluster
+### Step 9: Install ArgoCD on the Cluster
 
 Deploy ArgoCD for GitOps-based application management.
 
@@ -274,7 +252,7 @@ argocd-server-XXXXXXXXXX-XXXXX                       1/1     Running   0        
 
 ---
 
-### Step 11: Access ArgoCD UI
+### Step 10: Access ArgoCD UI
 
 Set up port forwarding and access the ArgoCD web interface.
 
@@ -313,7 +291,6 @@ kubectl port-forward svc/argocd-server -n argocd 8080:443
 | Colima | 0.8.4 | ✅ | Container runtime & K8s |
 | Docker CLI | 28.3.3 | ✅ | Container management |
 | kubectl | 1.33.3 | ✅ | Kubernetes CLI |
-| Helm | 3.18.4 | ✅ | Kubernetes package manager |
 | Tilt | 0.35.0 | ✅ | Local K8s development |
 | ArgoCD CLI | 3.0.12 | ✅ | GitOps CLI |
 | Azure CLI | 2.76.0 | ✅ | Azure resource management |
@@ -332,9 +309,7 @@ With Phase 1 complete, you now have:
 - ✅ All necessary CLI tools for development
 
 You can now proceed to:
-- Phase 2: Setting up GitOps repository structure
-- Phase 3: Deploying sample applications
-- Phase 4: Configuring observability stack
+- Phase 2: Setting up GitOps repository and deploying observability stacks
 
 ### Useful Commands
 
