@@ -557,7 +557,10 @@ With Phase 2 complete, you have a fully functional local development environment
 - ✅ GitOps workflow with ArgoCD
 - ✅ All using raw Kubernetes manifests
 
-Future phases could include:
+**Immediate Next Step:**
+- **[Phase 2b - Ingress Controller Setup](phase2b-ingress-setup.md)**: Enhance your local development by replacing port-forwarding with permanent *.local domain access for all services. This optional but highly recommended phase will give you production-like service access.
+
+Future phases include:
 - **Phase 3**: CI/CD pipeline with GitHub Actions
 - **Phase 4**: Azure AKS for production deployment
 - **Phase 5**: Advanced secrets management

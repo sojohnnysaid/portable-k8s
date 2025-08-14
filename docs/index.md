@@ -39,14 +39,27 @@ We've established a complete GitOps workflow with:
 
 [View Phase 2 Documentation](local-setup/phase2-gitops-setup.md)
 
+### ✅ Phase 2b: Ingress Controller Setup - COMPLETE
+
+Enhanced local development experience with production-like service access:
+
+- **NGINX Ingress Controller:** Deployed using raw Kubernetes manifests (no Helm)
+- **Service Access:** All services available via *.local domains
+- **No Port-Forwarding:** Permanent access via argocd.local, grafana.local, kibana.local, prometheus.local
+- **K3s ServiceLB Integration:** Leveraging built-in load balancer for localhost access
+- **Kustomize Organization:** Clean deployment structure
+
+[View Phase 2b Documentation](local-setup/phase2b-ingress-setup.md)
+
 ### 🚀 Quick Start
 
 If you're just getting started, begin with:
 
 1. [Phase 1 - Local Development Environment Setup](local-setup/phase1-environment-setup.md) - Get your local K8s cluster running
 2. [Phase 2 - GitOps Repository and ArgoCD Configuration](local-setup/phase2-gitops-setup.md) - Set up GitOps workflow
-3. [Goals & Non-Goals](goals.md) - Understand what this project aims to achieve
-4. [Principles](principles.md) - Learn the guiding principles behind our decisions
+3. [Phase 2b - Ingress Controller Setup](local-setup/phase2b-ingress-setup.md) - Enable browser-friendly service access (optional but recommended)
+4. [Goals & Non-Goals](goals.md) - Understand what this project aims to achieve
+5. [Principles](principles.md) - Learn the guiding principles behind our decisions
 
 ## Architecture
 
@@ -56,6 +69,7 @@ This playbook implements a modern cloud-native architecture featuring:
 - **GitOps:** ArgoCD for continuous deployment
 - **CI/CD:** GitHub Actions for builds and testing
 - **Observability:** Prometheus, Grafana, Elastic Stack (ELK + Filebeat)
+- **Ingress:** NGINX Ingress Controller for service access
 - **Security:** SOPS for secrets, Pod Security Standards
 - **Backups:** Velero for cluster state backup
 
@@ -65,17 +79,18 @@ This playbook implements a modern cloud-native architecture featuring:
 - **[Local Dev Setup](local-dev.md)** - Development workflow and best practices
   - [Phase 1 - Environment Setup](local-setup/phase1-environment-setup.md)
   - [Phase 2 - GitOps Configuration](local-setup/phase2-gitops-setup.md)
+  - [Phase 2b - Ingress Controller Setup](local-setup/phase2b-ingress-setup.md)
 - **[CI/CD & GitOps](cicd/app-pipeline.md)** - Pipeline and deployment strategies
 - **[Operations Runbooks](runbooks/bootstrap.md)** - Day-to-day operational procedures
 - **[Security Baseline](security.md)** - Security configurations and best practices
 
 ## Next Steps
 
-With Phases 1 & 2 complete, the upcoming phases include:
+With Phases 1, 2, and 2b complete, the upcoming phases include:
 
 - **Phase 3:** CI/CD Pipeline with GitHub Actions
 - **Phase 4:** Azure AKS Provisioning and Production Setup
-- **Phase 5:** ✅ Full Observability Stack (Elastic Stack Logging) - COMPLETE
+- **Phase 5:** Full Observability Stack Enhancement (Advanced metrics, alerting, and application instrumentation)
 - **Phase 6:** Advanced Secrets Management
 - **Phase 7:** Velero Backup Configuration
 - **Phase 8:** Security Policy Enforcement
@@ -86,4 +101,4 @@ This is a living document that evolves with best practices and new tools. Contri
 
 ---
 
-*Last Updated: Phase 2 Complete - Full Observability Stack with Monitoring and Logging*
+*Last Updated: Phase 2b Complete - Ingress Controller for Enhanced Local Development*
