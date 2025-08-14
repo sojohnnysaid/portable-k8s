@@ -88,6 +88,7 @@ nav:
       - Phase 1 - Local Development Environment Setup: local-setup/phase1-environment-setup.md
       - Phase 2 - GitOps Repository and ArgoCD Configuration: local-setup/phase2-gitops-setup.md
       - Phase 2b - Ingress Controller Setup: local-setup/phase2b-ingress-setup.md
+      - Phase 3 - CI/CD Pipeline with Security Scanning: local-setup/phase3-ci-pipeline.md
   - Local Dev Workflow: local-dev.md
   - Examples & Snippets: examples.md
   - Risks & Roadmap: risks-roadmap.md

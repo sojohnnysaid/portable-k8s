@@ -51,15 +51,29 @@ Enhanced local development experience with production-like service access:
 
 [View Phase 2b Documentation](local-setup/phase2b-ingress-setup.md)
 
+### ✅ Phase 3: CI/CD Pipeline with Security Scanning - COMPLETE
+
+Established enterprise-grade CI/CD pipeline with comprehensive security features:
+
+- **GitHub Actions Pipeline:** Multi-architecture builds (arm64/amd64) with automated deployments
+- **Security Scanning:** Trivy vulnerability scanning with SARIF reports
+- **Image Signing:** Cosign keyless signing with OIDC for supply chain security
+- **SBOM Generation:** Software bill of materials with Syft for compliance
+- **GitOps Integration:** Automated PRs to k8s repository with Kustomize image management
+- **Hello Go API:** Sample application deployed with full CI/CD workflow
+
+[View Phase 3 Documentation](local-setup/phase3-ci-pipeline.md)
+
 ### 🚀 Quick Start
 
 If you're just getting started, begin with:
 
 1. [Phase 1 - Local Development Environment Setup](local-setup/phase1-environment-setup.md) - Get your local K8s cluster running
 2. [Phase 2 - GitOps Repository and ArgoCD Configuration](local-setup/phase2-gitops-setup.md) - Set up GitOps workflow
-3. [Phase 2b - Ingress Controller Setup](local-setup/phase2b-ingress-setup.md) - Enable browser-friendly service access (optional but recommended)
-4. [Goals & Non-Goals](goals.md) - Understand what this project aims to achieve
-5. [Principles](principles.md) - Learn the guiding principles behind our decisions
+3. [Phase 2b - Ingress Controller Setup](local-setup/phase2b-ingress-setup.md) - Enable browser-friendly service access
+4. [Phase 3 - CI/CD Pipeline with Security Scanning](local-setup/phase3-ci-pipeline.md) - Build secure CI/CD pipeline
+5. [Goals & Non-Goals](goals.md) - Understand what this project aims to achieve
+6. [Principles](principles.md) - Learn the guiding principles behind our decisions
 
 ## Architecture
 
@@ -67,11 +81,12 @@ This playbook implements a modern cloud-native architecture featuring:
 
 - **Platform:** Kubernetes (K3s locally, AKS in Azure)
 - **GitOps:** ArgoCD for continuous deployment
-- **CI/CD:** GitHub Actions for builds and testing
+- **CI/CD:** GitHub Actions with multi-arch builds, security scanning (Trivy), and image signing (Cosign)
+- **Container Registry:** GitHub Container Registry (GHCR) for image storage
 - **Observability:** Prometheus, Grafana, Elastic Stack (ELK + Filebeat)
 - **Ingress:** NGINX Ingress Controller for service access
-- **Security:** SOPS for secrets, Pod Security Standards
-- **Backups:** Velero for cluster state backup
+- **Security:** Image signing, vulnerability scanning, SBOM generation, Pod Security Standards
+- **Backups:** Velero for cluster state backup (upcoming)
 
 ## Documentation Structure
 
@@ -80,20 +95,20 @@ This playbook implements a modern cloud-native architecture featuring:
   - [Phase 1 - Environment Setup](local-setup/phase1-environment-setup.md)
   - [Phase 2 - GitOps Configuration](local-setup/phase2-gitops-setup.md)
   - [Phase 2b - Ingress Controller Setup](local-setup/phase2b-ingress-setup.md)
+  - [Phase 3 - CI/CD Pipeline](local-setup/phase3-ci-pipeline.md)
 - **[CI/CD & GitOps](cicd/app-pipeline.md)** - Pipeline and deployment strategies
 - **[Operations Runbooks](runbooks/bootstrap.md)** - Day-to-day operational procedures
 - **[Security Baseline](security.md)** - Security configurations and best practices
 
 ## Next Steps
 
-With Phases 1, 2, and 2b complete, the upcoming phases include:
+With Phases 1, 2, 2b, and 3 complete, the upcoming phases include:
 
-- **Phase 3:** CI/CD Pipeline with GitHub Actions
 - **Phase 4:** Azure AKS Provisioning and Production Setup
 - **Phase 5:** Full Observability Stack Enhancement (Advanced metrics, alerting, and application instrumentation)
-- **Phase 6:** Advanced Secrets Management
+- **Phase 6:** Advanced Secrets Management with SOPS/KSOPS
 - **Phase 7:** Velero Backup Configuration
-- **Phase 8:** Security Policy Enforcement
+- **Phase 8:** Security Policy Enforcement with Kyverno/OPA
 
 ## Contributing
 
@@ -101,4 +116,4 @@ This is a living document that evolves with best practices and new tools. Contri
 
 ---
 
-*Last Updated: Phase 2b Complete - Ingress Controller for Enhanced Local Development*
+*Last Updated: Phase 3 Complete - CI/CD Pipeline with Enterprise-Grade Security*
