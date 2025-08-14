@@ -33,9 +33,11 @@ We've established a complete GitOps workflow with:
 - **GitOps Repository:** Structured repository at `github.com/sojohnnysaid/k8s`
 - **Monitoring Stack:** Prometheus & Grafana deployed using raw Kubernetes manifests
 - **Elastic Stack:** Complete ELK (Elasticsearch, Logstash, Kibana) + Filebeat for log aggregation
+  - Kibana enhanced with init containers and health probes for improved reliability
 - **Auto-sync:** ArgoCD automatically deploying from Git
 - **Repository Access:** SSH keys configured for secure access
 - **Manifest-based Deployment:** Moved away from Helm charts to raw Kubernetes manifests for better control
+- **Namespace Organization:** Well-structured namespaces for better resource isolation
 
 [View Phase 2 Documentation](local-setup/phase2-gitops-setup.md)
 
@@ -48,6 +50,7 @@ Enhanced local development experience with production-like service access:
 - **No Port-Forwarding:** Permanent access via argocd.local, grafana.local, kibana.local, prometheus.local
 - **K3s ServiceLB Integration:** Leveraging built-in load balancer for localhost access
 - **Kustomize Organization:** Clean deployment structure
+- **GitOps Management:** Optional ArgoCD application for centralized ingress resource management
 
 [View Phase 2b Documentation](local-setup/phase2b-ingress-setup.md)
 
@@ -61,6 +64,8 @@ Established enterprise-grade CI/CD pipeline with comprehensive security features
 - **SBOM Generation:** Software bill of materials with Syft for compliance
 - **GitOps Integration:** Automated PRs to k8s repository with Kustomize image management
 - **Hello Go API:** Sample application deployed with full CI/CD workflow
+  - Deployed to dedicated `backend-api` namespace for better organization
+  - ArgoCD manages namespace placement without hardcoded values in manifests
 
 [View Phase 3 Documentation](local-setup/phase3-ci-pipeline.md)
 
@@ -80,12 +85,13 @@ If you're just getting started, begin with:
 This playbook implements a modern cloud-native architecture featuring:
 
 - **Platform:** Kubernetes (K3s locally, AKS in Azure)
-- **GitOps:** ArgoCD for continuous deployment
+- **GitOps:** ArgoCD for continuous deployment with centralized application management
 - **CI/CD:** GitHub Actions with multi-arch builds, security scanning (Trivy), and image signing (Cosign)
 - **Container Registry:** GitHub Container Registry (GHCR) for image storage
-- **Observability:** Prometheus, Grafana, Elastic Stack (ELK + Filebeat)
-- **Ingress:** NGINX Ingress Controller for service access
+- **Observability:** Prometheus, Grafana, Elastic Stack (ELK + Filebeat with enhanced Kibana reliability)
+- **Ingress:** NGINX Ingress Controller for service access (GitOps managed)
 - **Security:** Image signing, vulnerability scanning, SBOM generation, Pod Security Standards
+- **Namespace Organization:** Dedicated namespaces for infrastructure, applications, and ingress resources
 - **Backups:** Velero for cluster state backup (upcoming)
 
 ## Documentation Structure
@@ -116,4 +122,4 @@ This is a living document that evolves with best practices and new tools. Contri
 
 ---
 
-*Last Updated: Phase 3 Complete - CI/CD Pipeline with Enterprise-Grade Security*
+*Last Updated: Enhanced with improved namespace organization, centralized ingress management, and Kibana reliability improvements*

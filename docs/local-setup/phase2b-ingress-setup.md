@@ -86,6 +86,8 @@ ingress/nginx-controller/
 └── kustomization.yaml     # Kustomize organization
 ```
 
+**Note:** The NGINX controller remains in the `ingress-nginx` namespace as per upstream standards, while ingress resources can be deployed to a dedicated `ingress` namespace for better organization.
+
 **Key configurations:**
 - **Service Type**: LoadBalancer (works with K3s ServiceLB)
 - **Default IngressClass**: Set as default for all ingress resources
@@ -196,6 +198,35 @@ spec:
 ```bash
 kubectl apply -k ingress/resources/
 ```
+
+**Alternative: ArgoCD Management (Recommended)**
+For better GitOps workflow, create an ArgoCD application to manage all ingress resources:
+
+```yaml
+# argocd-apps/ingress-app.yaml
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: ingress
+  namespace: argocd
+spec:
+  project: default
+  source:
+    repoURL: git@github.com:sojohnnysaid/k8s.git
+    path: ingress
+    targetRevision: main
+  destination:
+    server: https://kubernetes.default.svc
+    namespace: ingress
+  syncPolicy:
+    automated:
+      prune: true
+      selfHeal: true
+    syncOptions:
+      - CreateNamespace=true
+```
+
+This ensures all ingress resources are managed through GitOps and prevents resource conflicts.
 
 **Verify ingress creation:**
 ```bash
@@ -383,6 +414,7 @@ You have successfully enhanced your local development environment with:
 |-----------|--------|---------|
 | **NGINX Ingress Controller** | ✅ | Deployed with raw K8s manifests |
 | **Service Ingresses** | ✅ | All services accessible via *.local domains |
+| **ArgoCD Application** | ✅ | Optional: Ingress resources managed via GitOps |
 | **ArgoCD HTTP Mode** | ✅ | Configured for ingress compatibility |
 | **Local DNS** | ✅ | /etc/hosts configured for local domains |
 | **No Port-Forwarding** | ✅ | Services always accessible |

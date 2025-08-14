@@ -141,6 +141,8 @@ argocd-apps/elastic-manifests/
 - Connected to Elasticsearch service
 - Web UI on port 5601
 - Auto-configured for Elasticsearch connection
+- Init container to wait for Elasticsearch readiness
+- Health probes for improved reliability
 
 **Logstash Configuration:**
 - Beats input on port 5044
@@ -490,7 +492,7 @@ You have successfully:
 
 **Elastic Stack (Logs):**
 - **Elasticsearch**: Log storage and indexing (single-node, ephemeral)
-- **Kibana**: Log visualization and search UI (port 5601)  
+- **Kibana**: Log visualization and search UI (port 5601) with init container and health checks
 - **Logstash**: Log processing and enrichment pipeline
 - **Filebeat**: DaemonSet collecting logs from all containers
 
@@ -549,6 +551,18 @@ k8s/
 - **Ephemeral Storage**: No persistent volumes for simplicity
 - **Security Disabled**: Elasticsearch/Kibana security off for dev
 
+### Namespace Organization
+
+**Recommended namespace structure for better organization:**
+- `argocd` - ArgoCD components
+- `monitoring` - Prometheus and Grafana
+- `elastic-stack` - Elasticsearch, Kibana, Logstash, Filebeat
+- `ingress` - Ingress resources (when using centralized management)
+- `backend-api` - Backend API services (for application deployments)
+- `ingress-nginx` - NGINX ingress controller
+
+**Note:** Avoid hardcoding namespaces in manifests when using ArgoCD. Let ArgoCD manage namespace placement through the Application's `destination.namespace` configuration.
+
 ### Next Steps
 
 With Phase 2 complete, you have a fully functional local development environment with:
@@ -556,6 +570,7 @@ With Phase 2 complete, you have a fully functional local development environment
 - ✅ Complete logging stack (Elastic Stack with ELK + Filebeat)
 - ✅ GitOps workflow with ArgoCD
 - ✅ All using raw Kubernetes manifests
+- ✅ Well-organized namespace structure
 
 **Immediate Next Step:**
 - **[Phase 2b - Ingress Controller Setup](phase2b-ingress-setup.md)**: Enhance your local development by replacing port-forwarding with permanent *.local domain access for all services. This optional but highly recommended phase will give you production-like service access.

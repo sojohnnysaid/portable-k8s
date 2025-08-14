@@ -255,7 +255,6 @@ apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: hello-go-api
-  namespace: default
 spec:
   replicas: 2
   selector:
@@ -283,7 +282,6 @@ apiVersion: v1
 kind: Service
 metadata:
   name: hello-go-api
-  namespace: default
 spec:
   selector:
     app: hello-go-api
@@ -298,7 +296,6 @@ apiVersion: networking.k8s.io/v1
 kind: Ingress
 metadata:
   name: hello-go-api
-  namespace: default
 spec:
   ingressClassName: nginx
   rules:
@@ -319,8 +316,6 @@ spec:
 apiVersion: kustomize.config.k8s.io/v1beta1
 kind: Kustomization
 
-namespace: default
-
 resources:
   - deployment.yaml
   - service.yaml
@@ -330,6 +325,8 @@ images:
   - name: ghcr.io/sojohnnysaid/hello-go-api
     newTag: latest
 ```
+
+**Note:** Do not hardcode the namespace in kustomization.yaml. ArgoCD will manage the namespace based on the Application's destination configuration.
 
 **Status:** ✅ Complete
 
@@ -358,7 +355,7 @@ spec:
     targetRevision: main
   destination:
     server: https://kubernetes.default.svc
-    namespace: default
+    namespace: backend-api  # Dedicated namespace for backend services
   syncPolicy:
     automated:
       prune: true
@@ -373,6 +370,8 @@ spec:
     - name: 'OpenAPI Spec'
       value: 'http://api.local/openapi.json'
 ```
+
+**Important:** The application is deployed to the `backend-api` namespace for better organization and separation of concerns.
 
 **Apply the application:**
 ```bash
@@ -494,7 +493,7 @@ Confirm the application is running and accessible.
 
 **Check pod status:**
 ```bash
-kubectl get pods -n default | grep hello-go
+kubectl get pods -n backend-api | grep hello-go
 ```
 
 **Expected output:**
@@ -586,7 +585,7 @@ You have successfully implemented a complete CI/CD pipeline with enterprise-grad
 
 **ArgoCD Application:**
 - **Name:** hello-go-api
-- **Namespace:** default
+- **Namespace:** backend-api (application namespace)
 - **Sync Policy:** Auto-sync enabled
 - **External URLs:** Configured in application metadata
 
@@ -622,7 +621,7 @@ docker manifest inspect ghcr.io/sojohnnysaid/hello-go-api:tag
 **502 Bad Gateway from Ingress:**
 ```bash
 # Check application logs
-kubectl logs <pod-name> -n default
+kubectl logs <pod-name> -n backend-api
 
 # Verify binding address (should be 0.0.0.0:8888)
 # Not 127.0.0.1:8888
@@ -644,6 +643,15 @@ kubectl get application hello-go-api -n argocd
 
 # Force sync if needed
 argocd app sync hello-go-api
+```
+
+**Application in Wrong Namespace:**
+```bash
+# Check if kustomization.yaml has hardcoded namespace
+grep "namespace:" argocd-apps/hello-go-api/kustomization.yaml
+
+# Remove any hardcoded namespace - let ArgoCD manage it
+# ArgoCD uses destination.namespace from the Application spec
 ```
 
 ### Next Steps
@@ -692,7 +700,7 @@ cosign download sbom ghcr.io/sojohnnysaid/hello-go-api:main
 argocd app get hello-go-api
 
 # Check current image tag
-kubectl get deployment hello-go-api -n default \
+kubectl get deployment hello-go-api -n backend-api \
   -o jsonpath='{.spec.template.spec.containers[0].image}'
 ```
 
